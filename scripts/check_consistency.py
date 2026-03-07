@@ -4,34 +4,34 @@ check_consistency.py
 --------------------
 Analyses HPSWG-Models TSV files for consistency of inter-model linking nodes.
 
-Strategy (Phase 1)
-------------------
-Each formed model should declare a '//subgraph Linked Entities' block listing
-the nodes that connect it to other models. These are the only nodes checked for
-consistency -- high-multiplicity classes like E55 (type terms) and EX_Digital_Image
-are ignored unless they appear explicitly in a Linked Entities block.
+Phase 1 strategy
+----------------
+Each formed model should declare:
+  1. A '//subgraph Linked Entities' block listing inter-model join nodes.
+  2. '//links <node> --> <folder>, <folder>' directives declaring which model(s)
+     each linked entity connects to.
 
 The checker:
-  1. Extracts the key entity (first subject node) and Linked Entities block from
-     each model file.
-  2. Builds a cross-model index of linked entity nodes by class code.
-  3. Reports three categories:
-       A. Workflow conflicts -- linked entity label differs from workflow canonical label.
-       B. Inter-model disagreements -- two or more models disagree, no workflow reference.
-       C. Models missing the Linked Entities subgraph.
+  A. Validates declared links against target model key entities, using the CRM
+     class hierarchy (scripts/crm_hierarchy.json) to resolve subclass relationships.
+  B. For undeclared linked entities, suggests possible target models based on
+     matching class codes across all model key entities.
+  C. Flags formed models missing the Linked Entities subgraph entirely.
+  D. Lists verified consistent shared nodes (informational).
 
-Workflow TSVs (models/workflows/) are treated as the canonical reference.
+Workflow TSVs (models/workflows/) are the canonical label reference.
 User workflow TSVs (models/user_workflows/) are excluded entirely.
 
 Output: reports/consistency_report.md
 """
 
+import json
 import re
 import sys
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, NamedTuple, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 # ---------------------------------------------------------------------------
 # Paths and constants
@@ -41,6 +41,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 MODELS_DIR = REPO_ROOT / "models"
 REPORTS_DIR = REPO_ROOT / "reports"
 REPORT_FILE = REPORTS_DIR / "consistency_report.md"
+HIERARCHY_FILE = REPO_ROOT / "scripts" / "crm_hierarchy.json"
 
 EXCLUDED_FOLDERS = {"old_samples", "user_workflows"}
 WORKFLOW_FOLDERS = {"workflows"}
@@ -49,33 +50,51 @@ VERSION_RE = re.compile(r"_v(\d+(?:\.\d+)*)\.tsv$")
 SKIP_RE = re.compile(r"^\s*//")
 SUBGRAPH_START_RE = re.compile(r"^\s*//subgraph\s+Linked Entities", re.IGNORECASE)
 SUBGRAPH_END_RE = re.compile(r"^\s*//end", re.IGNORECASE)
+LINKS_RE = re.compile(
+    r"^\s*//links\s+(.+?)\s*-->\s*(.+)$", re.IGNORECASE
+)
 INSTANCE_SUFFIX_RE = re.compile(r"#-\d+$")
 
-# ---------------------------------------------------------------------------
-# Data structures
-# ---------------------------------------------------------------------------
-
-class ModelFile(NamedTuple):
-    path: Path
-    folder: str
-    is_workflow: bool
-
-
-class ModelAnalysis(NamedTuple):
-    model_file: ModelFile
-    key_entity: Optional[str]        # canonical label of first subject node
-    linked_entities: List[str]       # canonical labels from Linked Entities block
-    has_linked_entities_block: bool  # whether the block was found at all
-
-
-class LinkedNode(NamedTuple):
-    class_code: str
-    label: str                       # everything after "CODE: "
-    full_name: str                   # original canonical node name
-
 
 # ---------------------------------------------------------------------------
-# Helpers
+# CRM hierarchy helpers
+# ---------------------------------------------------------------------------
+
+def load_hierarchy() -> Dict[str, Set[str]]:
+    """
+    Load crm_hierarchy.json and return a flat dict:
+      class_code -> set of all known subclass codes (direct and indirect).
+    Returns empty dict if file not found.
+    """
+    if not HIERARCHY_FILE.exists():
+        return {}
+    with HIERARCHY_FILE.open(encoding="utf-8") as f:
+        raw = json.load(f)
+    # Remove the comment key if present
+    return {
+        k: set(v)
+        for k, v in raw.items()
+        if not k.startswith("_")
+    }
+
+
+def are_related(code_a: str, code_b: str, hierarchy: Dict[str, Set[str]]) -> bool:
+    """
+    Return True if code_a and code_b are the same, or one is a subclass of the other.
+    """
+    if code_a == code_b:
+        return True
+    # a is subclass of b
+    if code_b in hierarchy and code_a in hierarchy[code_b]:
+        return True
+    # b is subclass of a
+    if code_a in hierarchy and code_b in hierarchy[code_a]:
+        return True
+    return False
+
+
+# ---------------------------------------------------------------------------
+# Node helpers
 # ---------------------------------------------------------------------------
 
 def parse_version(filename: str) -> Optional[Tuple[int, ...]]:
@@ -97,12 +116,6 @@ def strip_instance_suffix(name: str) -> str:
 
 
 def extract_class_code(name: str) -> Optional[str]:
-    """
-    Extract CRM class code from a node name.
-    'E22: Heritage Object' -> 'E22'
-    'S13/E19: Sample'      -> 'S13/E19'
-    Returns None if no recognisable prefix.
-    """
     parts = name.split(":", 1)
     if len(parts) < 2:
         return None
@@ -112,20 +125,48 @@ def extract_class_code(name: str) -> Optional[str]:
     return None
 
 
-def extract_label(name: str) -> str:
-    """Everything after the first colon, stripped."""
-    parts = name.split(":", 1)
-    return parts[1].strip() if len(parts) > 1 else name
+def normalise_code(code: str) -> str:
+    """Normalise compound codes like S13/E19 -> use first part S13 for hierarchy lookup."""
+    return code.split("/")[0].strip()
 
 
-def to_linked_node(raw_name: str) -> Optional[LinkedNode]:
-    """Convert a raw node name to a LinkedNode, or None if not a CRM node."""
-    canonical = strip_instance_suffix(raw_name.strip())
-    code = extract_class_code(canonical)
-    if code is None:
-        return None
-    label = extract_label(canonical)
-    return LinkedNode(class_code=code, label=label, full_name=canonical)
+def parse_targets(raw: str) -> List[str]:
+    """
+    Parse the target side of a //links directive.
+    'person, institution' or 'person or institution' -> ['person', 'institution']
+    """
+    raw = raw.strip()
+    parts = re.split(r"\s+or\s+|,\s*", raw, flags=re.IGNORECASE)
+    return [p.strip().lower() for p in parts if p.strip()]
+
+
+# ---------------------------------------------------------------------------
+# Data structures
+# ---------------------------------------------------------------------------
+
+class ModelFile:
+    def __init__(self, path: Path, folder: str, is_workflow: bool):
+        self.path = path
+        self.folder = folder
+        self.is_workflow = is_workflow
+        self.short = short_name(path)
+
+
+class LinkedEntity:
+    def __init__(self, full_name: str):
+        self.full_name = full_name          # e.g. 'E39: Project Owner'
+        self.class_code = extract_class_code(full_name) or ""
+        self.label = full_name.split(":", 1)[1].strip() if ":" in full_name else full_name
+        self.declared_targets: List[str] = []   # folder names from //links
+
+
+class ModelAnalysis:
+    def __init__(self, model_file: ModelFile):
+        self.model_file = model_file
+        self.key_entity: Optional[str] = None
+        self.key_class_code: Optional[str] = None
+        self.linked_entities: List[LinkedEntity] = []
+        self.has_linked_block: bool = False
 
 
 # ---------------------------------------------------------------------------
@@ -166,35 +207,45 @@ def discover_model_files() -> List[ModelFile]:
 # ---------------------------------------------------------------------------
 
 def parse_model_file(mf: ModelFile) -> ModelAnalysis:
-    """
-    Extract the key entity and Linked Entities block from a TSV file.
-
-    Key entity: the subject of the first non-comment, non-directive triple.
-    Linked Entities: all Subject values declared as nodes inside the
-      '//subgraph Linked Entities ... //end' block.
-    """
+    ma = ModelAnalysis(mf)
     try:
         lines = mf.path.read_text(encoding="utf-8").splitlines()
     except Exception as e:
         print(f"Warning: could not read {mf.path}: {e}", file=sys.stderr)
-        return ModelAnalysis(mf, None, [], False)
+        return ma
 
-    key_entity: Optional[str] = None
-    linked_entities: List[str] = []
     in_linked_block = False
-    has_linked_block = False
+    # Track linked entities by name for //links association
+    linked_by_name: Dict[str, LinkedEntity] = {}
 
     for line in lines:
-        # Detect subgraph markers
+        # Detect subgraph start
         if SUBGRAPH_START_RE.match(line):
             in_linked_block = True
-            has_linked_block = True
+            ma.has_linked_block = True
             continue
+
+        # Detect subgraph end
         if SUBGRAPH_END_RE.match(line) and in_linked_block:
             in_linked_block = False
             continue
 
-        # Skip all other directives and comments
+        # Parse //links directives (inside or just after the block)
+        links_match = LINKS_RE.match(line)
+        if links_match:
+            node_name = strip_instance_suffix(links_match.group(1).strip())
+            targets = parse_targets(links_match.group(2))
+            # Match against known linked entities
+            if node_name in linked_by_name:
+                linked_by_name[node_name].declared_targets = targets
+            else:
+                # Store for later matching (directive may precede node declaration)
+                if node_name not in linked_by_name:
+                    linked_by_name[node_name] = LinkedEntity(node_name)
+                    linked_by_name[node_name].declared_targets = targets
+            continue
+
+        # Skip remaining comment/directive lines
         if SKIP_RE.match(line):
             continue
 
@@ -206,112 +257,137 @@ def parse_model_file(mf: ModelFile) -> ModelAnalysis:
         pred = parts[1].strip().lower()
         if not subj_raw or not pred:
             continue
-
-        # Skip metadata predicates
         if pred in ("tooltip", "has note", "from list"):
             continue
 
-        canonical_subj = strip_instance_suffix(subj_raw)
+        canonical = strip_instance_suffix(subj_raw)
+        code = extract_class_code(canonical)
+        if code is None:
+            continue
 
-        # Key entity: first subject seen in the whole file
-        if key_entity is None and not in_linked_block:
-            if extract_class_code(canonical_subj) is not None:
-                key_entity = canonical_subj
+        # Key entity: first subject with a class code seen outside the block
+        if ma.key_entity is None and not in_linked_block:
+            ma.key_entity = canonical
+            ma.key_class_code = code
 
-        # Linked entities: subjects declared inside the block
-        if in_linked_block:
-            if extract_class_code(canonical_subj) is not None:
-                if canonical_subj not in linked_entities:
-                    linked_entities.append(canonical_subj)
+        # Linked entities: subjects inside the block
+        if in_linked_block and canonical not in linked_by_name:
+            le = LinkedEntity(canonical)
+            linked_by_name[canonical] = le
 
-    return ModelAnalysis(
-        model_file=mf,
-        key_entity=key_entity,
-        linked_entities=linked_entities,
-        has_linked_entities_block=has_linked_block,
-    )
+    # Finalise linked entities list (preserve declaration order)
+    ma.linked_entities = list(linked_by_name.values())
+    return ma
 
 
 # ---------------------------------------------------------------------------
 # Analysis
 # ---------------------------------------------------------------------------
 
-def analyse(analyses: List[ModelAnalysis]) -> Dict:
+def analyse(
+    analyses: List[ModelAnalysis],
+    hierarchy: Dict[str, Set[str]],
+) -> Dict:
     """
-    Build the consistency index from parsed model analyses.
-
-    Returns:
-      workflow_nodes    -- {class_code -> set of labels} from workflow files
-      model_nodes       -- {class_code -> {label -> set of short_names}}
-                           from individual (non-workflow) models
-      workflow_conflicts -- per model: nodes whose label differs from workflow canonical
-      inter_model_disagreements -- class codes with >1 label, no workflow reference
-      missing_subgraph  -- list of non-workflow model short_names missing the block
+    For each non-workflow model, evaluate each linked entity:
+      - If //links declared: check class code relationship to target key entity
+      - If //links absent: suggest possible targets from other models' key entities
     """
-    # Workflow canonical labels: class_code -> set of labels seen in workflow files
-    workflow_nodes: Dict[str, Set[str]] = defaultdict(set)
+    # Build lookup: folder_name -> ModelAnalysis
+    by_folder: Dict[str, ModelAnalysis] = {
+        ma.model_file.folder: ma for ma in analyses
+    }
 
-    # Individual model labels: class_code -> {label -> set of short_names}
-    model_nodes: Dict[str, Dict[str, Set[str]]] = defaultdict(lambda: defaultdict(set))
+    # Build candidate index for suggestions:
+    # class_code -> list of (folder_name, key_entity_label)
+    candidates: Dict[str, List[Tuple[str, str]]] = defaultdict(list)
+    for ma in analyses:
+        if ma.key_entity and ma.key_class_code:
+            norm = normalise_code(ma.key_class_code)
+            candidates[norm].append((ma.model_file.folder, ma.key_entity))
 
+    results: List[Dict] = []
     missing_subgraph: List[str] = []
 
     for ma in analyses:
-        sname = short_name(ma.model_file.path)
-        is_wf = ma.model_file.is_workflow
-
-        # Flag non-workflow formed models missing the subgraph
-        if not is_wf and not ma.has_linked_entities_block:
-            missing_subgraph.append(sname)
-
-        # Collect nodes to index: linked entities + key entity
-        nodes_to_index = list(ma.linked_entities)
-        if ma.key_entity and ma.key_entity not in nodes_to_index:
-            nodes_to_index.insert(0, ma.key_entity)
-
-        for node_name in nodes_to_index:
-            node = to_linked_node(node_name)
-            if node is None:
-                continue
-            if is_wf:
-                workflow_nodes[node.class_code].add(node.label)
-            else:
-                model_nodes[node.class_code][node.label].add(sname)
-
-    # Workflow conflicts: per model, nodes that differ from workflow canonical label
-    # Structure: {sname -> [{class_code, current_label, canonical_labels}]}
-    workflow_conflicts: Dict[str, List[Dict]] = defaultdict(list)
-
-    for code, label_map in model_nodes.items():
-        wf_labels = workflow_nodes.get(code)
-        if not wf_labels:
+        if ma.model_file.is_workflow:
             continue
-        for label, file_set in label_map.items():
-            if label not in wf_labels:
-                for sname in sorted(file_set):
-                    workflow_conflicts[sname].append({
-                        "class_code": code,
-                        "current_label": label,
-                        "canonical_labels": wf_labels,
+
+        if not ma.has_linked_block:
+            missing_subgraph.append(ma.model_file.short)
+            continue
+
+        entity_results: List[Dict] = []
+
+        for le in ma.linked_entities:
+            if not le.class_code:
+                continue
+
+            norm_code = normalise_code(le.class_code)
+
+            if le.declared_targets:
+                # Evaluate each declared target
+                target_checks: List[Dict] = []
+                for target_folder in le.declared_targets:
+                    target_ma = by_folder.get(target_folder)
+                    if target_ma is None:
+                        target_checks.append({
+                            "folder": target_folder,
+                            "status": "unknown_target",
+                            "target_key": None,
+                            "target_code": None,
+                        })
+                        continue
+
+                    target_code = target_ma.key_class_code or ""
+                    target_key = target_ma.key_entity or ""
+                    norm_target = normalise_code(target_code)
+
+                    if norm_code == norm_target:
+                        status = "consistent"
+                    elif are_related(norm_code, norm_target, hierarchy):
+                        status = "hierarchy_match"
+                    else:
+                        status = "class_mismatch"
+
+                    target_checks.append({
+                        "folder": target_folder,
+                        "status": status,
+                        "target_key": target_key,
+                        "target_code": target_code,
                     })
 
-    # Inter-model disagreements: class codes with >1 label, no workflow reference
-    inter_model: List[Dict] = []
-    for code, label_map in model_nodes.items():
-        if code in workflow_nodes:
-            continue  # covered by workflow conflicts
-        if len(label_map) > 1:
-            inter_model.append({
-                "class_code": code,
-                "labels": dict(label_map),
-            })
+                entity_results.append({
+                    "entity": le.full_name,
+                    "class_code": le.class_code,
+                    "declared": True,
+                    "target_checks": target_checks,
+                    "suggestions": [],
+                })
+
+            else:
+                # No declaration -- suggest candidates with matching class code
+                suggestions = [
+                    (folder, key)
+                    for folder, key in candidates.get(norm_code, [])
+                    if folder != ma.model_file.folder
+                ]
+                entity_results.append({
+                    "entity": le.full_name,
+                    "class_code": le.class_code,
+                    "declared": False,
+                    "target_checks": [],
+                    "suggestions": suggestions,
+                })
+
+        results.append({
+            "model": ma.model_file.short,
+            "entities": entity_results,
+        })
 
     return {
-        "workflow_conflicts": dict(workflow_conflicts),
-        "inter_model_disagreements": inter_model,
+        "model_results": results,
         "missing_subgraph": missing_subgraph,
-        "workflow_nodes": dict(workflow_nodes),
-        "model_nodes": {k: dict(v) for k, v in model_nodes.items()},
     }
 
 
@@ -319,15 +395,26 @@ def analyse(analyses: List[ModelAnalysis]) -> Dict:
 # Report generation
 # ---------------------------------------------------------------------------
 
+STATUS_ICONS = {
+    "consistent":      "✅",
+    "hierarchy_match": "🔵",
+    "class_mismatch":  "⚠️",
+    "unknown_target":  "❓",
+}
+
+STATUS_NOTES = {
+    "consistent":      "Consistent",
+    "hierarchy_match": "Hierarchy match -- confirm intent",
+    "class_mismatch":  "Class mismatch -- check required",
+    "unknown_target":  "Target folder not found in repo",
+}
+
+
 def md_row(*cells: str) -> str:
     return "| " + " | ".join(str(c) for c in cells) + " |"
 
 
-def generate_report(
-    files: List[ModelFile],
-    analyses: List[ModelAnalysis],
-    result: Dict,
-) -> str:
+def generate_report(result: Dict, files: List[ModelFile]) -> str:
     lines: List[str] = []
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
@@ -342,148 +429,104 @@ def generate_report(
         f"**Individual model files analysed:** {len(individual)}  ",
         f"**Workflow/overview files analysed:** {len(workflows)}  ",
         "",
-        "This report checks consistency of inter-model linking nodes -- the entities "
-        "declared in each model's `//subgraph Linked Entities` block and each model's "
-        "key entity. High-multiplicity classes (E55 type terms, identifiers, images) "
-        "are ignored unless explicitly declared as linked entities.",
+        "This report checks consistency of inter-model linking nodes declared in "
+        "each model's `//subgraph Linked Entities` block. "
+        "Only declared linked entities are checked -- high-multiplicity classes "
+        "such as E55 type terms are not flagged unless explicitly declared.",
+        "",
+        "**Status key:**",
+        "- ✅ Consistent -- class codes match exactly",
+        "- 🔵 Hierarchy match -- related via CRM class hierarchy, confirm intent",
+        "- ⚠️ Class mismatch -- classes not related, check required",
+        "- ❓ Unknown target -- declared target folder not found in repo",
+        "- ⚠ No declaration -- `//links` directive missing, suggestions provided",
         "",
         "---",
         "",
     ]
 
     # -----------------------------------------------------------------------
-    # Section 1: Workflow conflicts (highest priority)
+    # Section 1: Per-model link validation
     # -----------------------------------------------------------------------
-    conflicts = result["workflow_conflicts"]
     lines += [
-        "## 1. Model update checklist (workflow conflicts)",
+        "## 1. Per-model link validation",
         "",
-        "These models contain linked entity labels that differ from the canonical "
-        "labels used in the workflow/overview TSV. Update the model to use the "
-        "canonical label and increment its version number.",
+        "Each model's linked entities are listed with their declared target models "
+        "and consistency status. Where no `//links` declaration exists, possible "
+        "targets are suggested based on matching class codes.",
         "",
     ]
 
-    if not conflicts:
-        lines.append(
-            "_All linked entity labels are consistent with the workflow._\n"
-        )
+    model_results = result["model_results"]
+    if not model_results:
+        lines.append("_No individual models with Linked Entities blocks found._\n")
     else:
-        total = sum(len(v) for v in conflicts.values())
-        lines += [
-            f"**Models requiring updates:** {len(conflicts)}  ",
-            f"**Total label changes needed:** {total}  ",
-            "",
-        ]
-        for sname in sorted(conflicts.keys()):
-            changes = conflicts[sname]
+        for mr in sorted(model_results, key=lambda x: x["model"]):
             lines += [
-                f"### `{sname}`",
+                f"<details>",
+                f"<summary><strong>{mr['model']}</strong></summary>",
                 "",
-                md_row("Class code", "Current label", "Change to"),
-                md_row("---", "---", "---"),
+                md_row(
+                    "Linked entity", "Class code",
+                    "Declared target(s)", "Status"
+                ),
+                md_row("---", "---", "---", "---"),
             ]
-            for c in sorted(changes, key=lambda x: x["class_code"]):
-                canonical = " or ".join(
-                    f"`{l}`" for l in sorted(c["canonical_labels"])
-                )
-                lines.append(md_row(
-                    f"`{c['class_code']}`",
-                    f"`{c['current_label']}`",
-                    canonical,
-                ))
-            lines.append("")
+
+            for er in mr["entities"]:
+                entity = f"`{er['entity']}`"
+                code = f"`{er['class_code']}`"
+
+                if er["declared"]:
+                    for tc in er["target_checks"]:
+                        icon = STATUS_ICONS.get(tc["status"], "?")
+                        note = STATUS_NOTES.get(tc["status"], tc["status"])
+                        target_key = (
+                            f"`{tc['target_key']}`" if tc["target_key"] else "--"
+                        )
+                        lines.append(md_row(
+                            entity, code,
+                            f"`{tc['folder']}` → {target_key}",
+                            f"{icon} {note}",
+                        ))
+                        entity = ""  # only show entity name on first row
+                        code = ""
+                else:
+                    if er["suggestions"]:
+                        sugg_str = ", ".join(
+                            f"`{f}` (`{k}`)" for f, k in er["suggestions"]
+                        )
+                        lines.append(md_row(
+                            entity, code,
+                            f"_Suggested: {sugg_str}_",
+                            "⚠ No declaration",
+                        ))
+                    else:
+                        lines.append(md_row(
+                            entity, code,
+                            "_No matching models found_",
+                            "⚠ No declaration",
+                        ))
+
+            lines += ["", "</details>", ""]
 
     # -----------------------------------------------------------------------
-    # Section 2: Inter-model disagreements (no workflow reference)
-    # -----------------------------------------------------------------------
-    inter = result["inter_model_disagreements"]
-    lines += [
-        "## 2. Inter-model disagreements (no workflow reference)",
-        "",
-        "These class codes appear as linked entities in more than one model with "
-        "different labels, and are not covered by the workflow. Human decision "
-        "needed: agree on a canonical label, then add it to the workflow and update "
-        "the affected models.",
-        "",
-    ]
-
-    if not inter:
-        lines.append(
-            "_No inter-model disagreements outside workflow coverage._\n"
-        )
-    else:
-        for item in sorted(inter, key=lambda x: x["class_code"]):
-            code = item["class_code"]
-            lines += [
-                f"### `{code}`",
-                "",
-                md_row("Label", "Used in"),
-                md_row("---", "---"),
-            ]
-            for label, file_set in sorted(item["labels"].items()):
-                lines.append(md_row(
-                    f"`{label}`",
-                    ", ".join(sorted(file_set)),
-                ))
-            lines.append("")
-
-    # -----------------------------------------------------------------------
-    # Section 3: Models missing Linked Entities subgraph
+    # Section 2: Models missing Linked Entities subgraph
     # -----------------------------------------------------------------------
     missing = result["missing_subgraph"]
     lines += [
-        "## 3. Models missing Linked Entities subgraph",
+        "## 2. Models missing Linked Entities subgraph",
         "",
         "These formed model files do not contain a `//subgraph Linked Entities` "
-        "block. Their linking nodes cannot be checked for consistency until the "
-        "block is added.",
+        "block. Add the block to enable consistency checking.",
         "",
     ]
-
     if not missing:
-        lines.append(
-            "_All individual models have a Linked Entities subgraph._\n"
-        )
+        lines.append("_All individual models have a Linked Entities subgraph._\n")
     else:
         for sname in sorted(missing):
             lines.append(f"- `{sname}`")
         lines.append("")
-
-    # -----------------------------------------------------------------------
-    # Section 4: Verified shared nodes (informational)
-    # -----------------------------------------------------------------------
-    wf_nodes = result["workflow_nodes"]
-    model_nodes = result["model_nodes"]
-
-    # Nodes consistent with workflow across at least one individual model
-    verified: List[Tuple[str, str, Set[str]]] = []
-    for code, wf_labels in wf_nodes.items():
-        label_map = model_nodes.get(code, {})
-        for label in wf_labels:
-            if label in label_map:
-                verified.append((code, label, label_map[label]))
-
-    lines += [
-        "## 4. Verified shared nodes",
-        "",
-        "Linked entity nodes that are consistent between the workflow and at least "
-        "one individual model. These are the confirmed inter-model join points.",
-        "",
-        md_row("Class code", "Canonical label", "Consistent in"),
-        md_row("---", "---", "---"),
-    ]
-
-    if not verified:
-        lines.append("_No verified shared nodes yet._")
-    else:
-        for code, label, file_set in sorted(verified, key=lambda x: x[0]):
-            lines.append(md_row(
-                f"`{code}`",
-                f"`{label}`",
-                ", ".join(sorted(file_set)),
-            ))
-    lines.append("")
 
     return "\n".join(lines)
 
@@ -505,21 +548,25 @@ def main():
         f"{len(workflows)} workflow file(s). Analysing..."
     )
 
-    analyses = [parse_model_file(f) for f in files]
-    result = analyse(analyses)
+    hierarchy = load_hierarchy()
+    if not hierarchy:
+        print(
+            "Warning: crm_hierarchy.json not found or empty. "
+            "Hierarchy matching will be skipped.",
+            file=sys.stderr,
+        )
 
-    report = generate_report(files, analyses, result)
+    analyses = [parse_model_file(f) for f in files]
+    result = analyse(analyses, hierarchy)
+    report = generate_report(result, files)
 
     REPORTS_DIR.mkdir(exist_ok=True)
     REPORT_FILE.write_text(report, encoding="utf-8")
     print(f"Report written to {REPORT_FILE.relative_to(REPO_ROOT)}")
 
-    n_conflicts = len(result["workflow_conflicts"])
-    n_changes = sum(len(v) for v in result["workflow_conflicts"].values())
-    n_inter = len(result["inter_model_disagreements"])
     n_missing = len(result["missing_subgraph"])
-    print(f"  Workflow conflicts:           {n_conflicts} model(s), {n_changes} change(s)")
-    print(f"  Inter-model disagreements:    {n_inter}")
+    n_models = len(result["model_results"])
+    print(f"  Models checked:               {n_models}")
     print(f"  Missing subgraph:             {n_missing}")
 
 

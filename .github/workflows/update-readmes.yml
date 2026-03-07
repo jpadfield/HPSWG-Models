@@ -10,6 +10,7 @@ on:
       - 'models/**/*.tsv'                           # versioned model TSVs in subfolders
       - 'models/**/*.txt'                           # precursor files
       - 'scripts/update_readmes.py'                 # generator logic
+      - 'scripts/check_consistency.py'              # consistency checker
       - 'scripts/ontologies.json'                   # ontology config
       - 'README.template.md'                        # top-level template
       - 'models/README.template.md'                 # models index template
@@ -41,7 +42,6 @@ jobs:
           NG_FILES=$(ls ng_models_v*.tsv 2>/dev/null || true)
           if [ -z "$NG_FILES" ]; then
             echo "No ng_models_v*.tsv found, skipping Mermaid fetch."
-            # Still set RAW_BASE so the Python script can run
             RAW_BASE="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_REF}"
             echo "RAW_BASE=$RAW_BASE" >> $GITHUB_ENV
             exit 0
@@ -66,16 +66,21 @@ jobs:
         run: |
           python scripts/update_readmes.py
 
+      - name: Run consistency checker
+        run: |
+          python scripts/check_consistency.py
+
       - name: Commit and push changes
         run: |
           set -e
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git status
           if [ -n "$(git status --porcelain)" ]; then
-            git config --global user.name "github-actions[bot]"
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
             git add -A
-            git commit -m "Auto-update READMEs and documentation"
-            git push
+            git commit -m "Auto-update READMEs and consistency report"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "${GITHUB_REF_NAME}"
           else
             echo "No changes to commit."
           fi

@@ -1,0 +1,28 @@
+SAMPLE IMAGING EVENT
+Field Name	Description and purpose of Field	Mapping to RS interface (tbc by Kartography)
+identification number of painting the image belongs to
+technical event that the image was created by	[controlled list of scientific techniques]
+date image was made
+protocol	linked to a protocol form
+origin of image	digital capture, derived image, or scanned slide
+filename	(as metadata is included in the filename)
+sample number
+type this is actually the physical state of the sample - ie relates to sample form but needs to always be referenced when referring to imaging	see table for controlled list
+version this is actually the physical state of the sample - ie relates to sample form but needs to always be referenced when referring to imaging	See table for controlled list. Use to differentiate between images of a sample in which the state of the sample has changed, but not substantially
+magnification	See table for controlled list.
+light source	visible or ultraviolet
+optical path	the light path used when taking the image. See table for controlled list.
+polariser	any extra optical microscope filter or setting used. Optional; if used, options are either Polarised Light or Crossed Polars.
+orientation	Optional: use for images of unmounted fragments. Choose from top, back, or side
+area	for photographs of a unique area on the sample.
+photo setup	Optional: use if different from protocol (e.g., multifocus, xyMosaic, exposure adjusted, white balance adjusted, gamma adjusted, resolution adjusted, glass coverslip used, unwetted)
+capture type	e.g., single capture, composite z-stack image, composite xy image (taken from Leica xlcf metadata)
+post-processing steps (if different from protocol)	e.g., cropped, scalebar added, other adjustment. Include name of software used, if applicable.
+comment on image capture method
+comment on post-production
+other comment
+bit depth per channel	provided by instrument?
+colour mode
+horizontal resolution
+exposure time
+web URL

@@ -1,0 +1,33 @@
+//flowchart LR
+E26: Sample Site	tooltip	The specific point or area on the painting where the sample was taken.	place-fs32|
+E26: Sample Site	has note	Document Note: Sample Site Model Overview
+Document Note: Sample Site Model Overview	tooltip	This model defines the relationships surrounding the Sample Site within the context of sampling events on paintings following CIDOC CRM and CRMsci principles. The Sample Site (E26) represents the precise point or small area on the painting from which a material sample was taken. It is physically located on the painting or a defined Painting Part (E22) and may also be situated within a broader Area of Interest (E26) allowing multiple related sampling points or observations to be grouped together. Each Sample Site can be linked to digital image regions that visually represent its position and to descriptive or contextual notes incorporated within related documents. The model records both its role in the Sample Taking event (S2) and its former association with the removed Sample (S13). These relationships establish a clear and reusable structure for documenting where samples originate how they are contextualised within the painting and how they relate to analytical and descriptive records across digital and physical domains.
+//subgraph Linked Entities
+E22: Painting	tooltip	A human-made work of art that forms the physical source object from which the sample is taken.	object-fs24|
+S13: Sample	tooltip	A physical part removed from the painting for scientific or conservation analysis.	object-fs24|
+S2: Sample Taking	tooltip	The event in which a material sample was physically removed from the painting.	event-fs24
+E31: Report or Document	tooltip	A textual or digital document recording information related to the sampling process, results, or reasoning.	document-fs24|
+EX_Digtial_Image_Region	tooltip	A defined digital region on an image corresponding to the physical sample site on the painting.	place2-fs24|
+E22: Painting Part	tooltip	A defined physical component or part of the painting, such as the paint layers, coatings, support, or later addition.	object-fs24|
+E26: Area of Interest	tooltip	A defined area on the painting used to group related observations, such as a paint passage, damage zone, or specific section.	place-fs24|
+//end sg1
+///SAMPLE SITE //////////////////////////////////////////////////////////////////////////////////////////////////
+E26: Sample Site	P48_has_preferred_identifier (1 to 1)	E42: Persistant Identifier (PID)#-1	|url
+E42: Persistant Identifier (PID)#-1	tooltip	Various types of PIDs can be used here, please note that again IGSNs are an option.
+E26: Sample Site	P1_is_identified_by (1 to 1)	E41: Unique System Label#-1	|name
+E41: Unique System Label#-1	tooltip	ResearchSpace required label.
+E26: Sample Site	P67i_is_referred_to_by (1 to 1)	E73: Description Text#-1	|literal
+E73: Description Text#-1	P45i_is incorporated in (0 to n)	E31: Report or Document	|document
+E26: Sample Site	P138i_has_representation (1 to n)	EX_Digitial_Image_Region	|place2
+E26: Sample Site	P67i_is_referred_to_by (1 to 1)	E73: Site Selection Description	|literal
+E73: Site Selection Description	P45i_is incorporated in (0 to n)	E31: Report or Document	|document
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+E26: Sample Site	P56i_is_found_on (1 to 1)	E22: Painting
+E26: Sample Site	P53i_is_former_or_current_location_of (1 to n)	S13: Sample
+E26: Sample Site	O4i_was_sampling_location_of (1 to 1)	S2: Sample Taking
+E26: Sample Site	P89_falls_within (1 to n)	E26: Area of Interest	|place-fs24
+E73: Site Selection Description	P67_refers_to (1 to n)	E26: Area of Interest	|literal
+E26: Sample Site	P56i_is_found_on (0 to 1)	E22: Painting Part	|object-fs24
+E73: Site Selection Description	P67_refers_to (1 to n)	E22: Painting Part	|literal
+// Need a reference to the Painting image that a site location is defined for.
+Currently in RS there's also Sampling site - image annotation that is E26 - P138i_has_representation - EX_Digital_Image_Region

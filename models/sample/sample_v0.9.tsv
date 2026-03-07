@@ -1,0 +1,44 @@
+//flowchart LR
+S13: Sample	tooltip	A discrete physical fragment or portion removed from the painting for study or conservation.	object-fs32|
+S13: Sample	has note	Document Note: Sample Model Overview
+Document Note: Sample Model Overview	tooltip	This model defines the Sample (S13) as a discrete physical fragment removed from a heritage object for study. It brings together identification, classification, and contextual data, linking each sample to its source object, the sampling event, and any subsequent analytical or modification events. Ownership, custody, and storage are documented to support traceability, while descriptive and measurement links ensure that both qualitative and quantitative observations remain connected to their physical origin.
+//subgraph Linked Entities
+S2: Sample Taking	tooltip	The event during which the sample was physically removed from its source object.	event-fs24|
+E22: Painting	tooltip	The artwork or object from which the sample originated.	object-fs24|
+E53: Storage Location	tooltip	The physical place where the sample is currently housed or permanently stored.	place-fs24|
+E39: Institution or Person	tooltip	The legal owner of the sample.	actor-fs24|
+E39: Institution or Person#-1	tooltip	The institution responsible for the care, storage, or management of the physical sample.	actor-fs24|
+E31: Sample Documents	tooltip	Any document, note, report, or publication describing or relating to the sample.	document-fs24|
+E16: Measurement	tooltip	An event in which one or more quantitative properties of the sample were measured.	event-fs24|
+S27: Observation	tooltip	An event in which qualitative or visual properties of the sample were examined.	event-fs24|
+E11: Sample Modification	tooltip	An event that altered the sample after its initial removal, such as preparation, embedding, or coating.	event-fs24|
+//end sg1
+S13: Sample	P48_has_preferred_identifier (1 to 1)	E42: Persistent Identifier (IGSN)	|url
+E42: Persistent Identifier (IGSN)	P2_has_type	aat:300387580
+S13: Sample	P1_is_identified_by (1 to 1)	E41: Unique System Label	|name
+E41: Unique System Label	tooltip	ResearchSpace required label.
+S13: Sample	P67i_is_referred_to_by (0 to n)	E73: Description Text	|literal
+E73: Description Text	P45i_is incorporated in (0 to n)	E31: Sample Documents	|document
+S13: Sample	P67i_is_referred_to_by (0 to n)	E31: Sample Documents	|document
+S13: Sample	P70i_is_documented_in (0 to n)	E31: Sample Documents	|document
+S13: Sample	P1_is_identified_by (1 to 1)	E42: Custodian Identifier	|url
+E42: Custodian Identifier	tooltip	A locally assigned identifier or code used by the institution responsible for managing the physical sample.
+S13: Sample	P1_is_identified_by (0 to n)	E42: Alternative Identifier	|url
+E42: Alternative Identifier	tooltip	Any other identifier or code by which the sample may be known in external systems, publications, or legacy records.
+S13: Sample	P1_is_identified_by (1 to 1)	E41: Sample Label	|name
+E41: Sample Label	tooltip	A human-readable name or number used to identify the sample in documentation or images, typically visible on labels or slides.
+S13: Sample	P2_has_type	E55: sample type	|type
+S13: Sample	P2_has_type	E55: sample keywords	|type
+E55: sample keywords	tooltip	Keywords or classification terms (e.g., class, technique, composition).
+S13: Sample	P43_has_dimension (1 to n)	E54: Sample dimension	|dims
+E54: Sample dimension	tooltip	Dimensions or size class of the sample, controlled list:<br/>micro-sample (< 0.01 m),<br/>small-sample (0.01 – 0.1 m),<br/>medium-sample (0.1 – 0.3 m),<br/>large-sample (0.3 – 1.0 m),<br/>very-large-fragment (> 1.0 m)
+E54: Sample dimension	P2_has_type	aat:300055642
+S13: Sample	P44_has_condition (1 to 1)	E55: condition state	|type
+S13: Sample	P52_has_current_owner (1 to n)	E39: Institution or Person	|actor
+S13: Sample	P50_has_current_keeper (1 to 1)	E39: Institution or Person#-1	|actor
+S13: Sample	P54_has_current_permanent_location (1 to 1)	E53: Storage Location	|place
+S13: Sample	O5i_was_removed_by (1 to 1)	S2: Sample Taking	|event
+S13: Sample	O3_sampled_from (1 to 1)	E22: Painting	|object
+S13: Sample	O42i_was_measured_by (0 to n)	E16: Measurement
+S13: Sample	O35i_was_observed_by (0 to n)	S27: Observation
+S13: Sample	P31i_was_modified_by (0 to n)	E11: Sample Modification

@@ -1,0 +1,91 @@
+//Flowchart LR fix
+//subgraph Documentation
+E7: Sampling Event	P9_consists_of (1 to n)	S2: Sample Taking	event|event
+E7: Sampling Event	P9i_forms_part_of (0 to n)	E7: Project	|event
+E7: Project	tooltip	High-level grouping associating multiple sampling events within the same research, conservation, catalogue, exhibition, or documentation context.
+E7: Project	P9_consists_of (0 to n)	E7: Sampling Event
+E7: Project	P9i_forms_part_of (0 to n)	E7: Project
+E7: Project	P9_consists_of (0 to n)	E7: Project
+S2: Sample Taking	tooltip	An individual act of removing material from a Heritage Object at a specific Sample Site. Serves as the authoritative mediator between object, site, and sample; any direct object–sample links are secondary and non-authoritative.
+S2: Sample Taking	P9i_forms_part_of (1 to 1)	E7: Sampling Event
+S2: Sample Taking	O3_sampled_from (1 to 1)	E22: Heritage Object	|object
+E22: Heritage Object	O3i_was_sampled_by (0 to n)	S2: Sample Taking
+E22: Heritage Object	P138i_has_representation (0 to n)	EX_Digital_Image: Annotation Image	|digital2
+EX_Digital_Image: Annotation Image	tooltip	A digital image used for documentation and annotation of the Heritage Object. Acts as the primary coordinate reference frame for image-space Sampling Points (E94), including future IIIF selector alignment.
+EX_Digital_Image: Annotation Image	P138_represents (1 to 1)	E22: Heritage Object
+//subgraph Sample Entity
+E22: Physical Sample	tooltip	A curated physical artefact that contains/carries the sampled matter (S13). P46 is used here as a pragmatic 'contains/carries' proxy for collection management purposes.	object|
+S13: Material Sample	tooltip	The removed matter, treated as an amount of matter (CRMsci S13) whose identity is grounded in material continuity and representativity.
+//end sg2-10-10
+S2: Sample Taking	O5_removed (1 to 1)	S13: Material Sample	|object
+S13: Material Sample	O5i_was_removed_by (1 to 1)	S2: Sample Taking
+E22: Physical Sample	P138i_has_representation (0 to n)	EX_Digital_Image: Sample Image	|digital2
+EX_Digital_Image: Sample Image	P138_represents (1 to 1)	E22: Physical Sample
+S13: Material Sample	P138i_has_representation (0 to n)	EX_Digital_Image: Analytical Sample Image	|digital2
+S2: Sample Taking	O4_sampled_at (1 to 1)	E26: Sample Site	|place
+E26: Sample Site	tooltip	A conceptual sampling location on the Heritage Object. A single Sample Site may be defined multiple times via P168 by multiple Sampling Points (E94) taken from different images/regions and/or later re-annotations; these are alternative representation-scoped anchors for the same site, not distinct physical sites.
+E26: Sample Site	O4i_was_sampling_location_of (1 to n)	S2: Sample Taking
+E26: Sample Site	P56i_is_found_on (1 to 1)	E22: Heritage Object
+E22: Heritage Object	P56_bears_feature (0 to n)	E26: Sample Site
+// Replace with links to physical sample E22 - see below
+//E26: Sample Site	P53i_is_former_or_current_location_of (1 to n)	S13: Material Sample
+//S13: Material Sample	P53_has_former_or_current_location (0 to n)	E26: Sample Site
+S13: Material Sample	O27i_was_source_for (0 to n)	S24: Sample Splitting	|event
+S24: Sample Splitting	O27_split (1 to 1)	S13: Material Sample
+//subgraph Sub Sample Entity
+E22: Physical Sample#-1	tooltip	A new curated Physical Sample identity created as the result of a Sample Splitting event. It represents a distinct registered sample entity derived from the source sample’s material (S13), with its own persistent identity, storage, status, and lifecycle history, while remaining materially traceable to the original sample via the splitting event.	object_bn|
+S13: Material Sample#-1	tooltip	A new Sample created through a Sample Splitting event. Although shown here only in relation to the splitting activity, this sub-sample is a full S13 Sample and may independently be observed, measured, modified, represented by images, and further split. These standard Sample relationships are omitted from the diagram for clarity.	object_bn|
+//end sg2-10-10
+S24: Sample Splitting	O29_removed_sub-sample (1 to n)	S13: Material Sample#-1	|object_bn
+S13: Material Sample#-1	O29_was_sub-sample_removed_by (1 to 1)	S24: Sample Splitting
+E26: Sample Site	P138i_has_representation (0 to n)	EX_Digital_Image_Region	|place2
+EX_Digital_Image_Region	tooltip	A derived digital region (crop/ROI) created for documentation or annotation purposes. Represents a Sample Site in a specific image but is not the site itself. Used as a contextual or classificatory aid for locating sampling points, particularly in annotation-driven workflows (e.g. ResearchSpace, IIIF viewers).
+EX_Digital_Image_Region	P138_represents (1 to 1)	E26: Sample Site
+EX_Digital_Image: Annotation Image	L1_has_part (0 to n)	EX_Digital_Image_Region
+EX_Digital_Image_Region	L1i_is_part_of (1 to 1)	EX_Digital_Image: Annotation Image
+//To actually define a sample point relative to a region we would need something like
+EX_Digital_Image_Region	P67i_is_referred_to_by (0 to n)	E94: Sampling Point	|place2
+E94: Sampling Point	P67_refers_to (1 to 1)	EX_Digital_Image_Region
+E94: Sampling Point	tooltip	A representation-scoped spatial primitive expressed in the coordinate system of the referenced digital image/region (e.g., pixel coordinates). When linked via P168 it defines the conceptual locus of the Sample Site only in that representational frame (not object-space, not metrological). Also functions as a placeholder for future IIIF selector/annotation alignment. Coordinates are interpreted in the coordinate system of the referenced full image. A link to an image region may also be recorded when the point was created via a derived crop/region (e.g., ResearchSpace annotation workflow).
+EX_Digital_Image_Region	P1_is_identified_by (0 to 1)	E42: IIIF Annotation URI	|url
+EX_Digital_Image: Annotation Image	P67i_is_referred_to_by (0 to n)	E94: Sampling Point
+E94: Sampling Point	P67_refers_to (0 to 1)	EX_Digital_Image: Annotation Image
+E94: Sampling Point	P2_has_type (1 to 1)	E55: IIIF selector point (image-space)	|type
+E94: Sampling Point	P1_is_identified_by (0 to 1)	E42: IIIF Annotation URI#-1	|url
+E94: Sampling Point	P190_has_symbolic_content (1 to 1)	E62: point coordinate	|literal
+E62: point coordinate	tooltip	Pixel or image-space coordinate value automatically generated from the Sampling Point (E94) relative to the referenced digital image. These coordinates describe the location in the image’s coordinate system, not the physical position on the original Heritage Object. Physical/object-space coordinates, when recorded, are captured separately as manual metadata.
+E26: Sample Site	P168_place_is_defined_by (0 to n)	E94: Sampling Point
+E94: Sampling Point	P168i_defines_place (1 to 1)	E26: Sample Site
+//Optional direct connections between Objects and Samples
+//S13: Material Sample	P46i_forms_part_of	E22: Heritage Object
+//E22: Heritage Object	P46_is_composed_of	S13: Material Sample
+//S13: Material Sample#-1	P46i_forms_part_of	S13: Material Sample
+//S13: Material Sample	P46_is_composed_of	S13: Material Sample#-1
+S13: Material Sample	O24i_was_measured_by (0 to n)	E16: Measurement	|event
+E16: Measurement	O24_measured (1 to n)	S13: Material Sample
+E16: Measurement	tooltip	An event in which one or more quantitative properties of the sample were measured.
+S13: Material Sample	O35i_was_observed_by (0 to n)	S27: Observation	|event
+S27: Observation	O35_observed_entity (1 to n)	S13: Material Sample
+S27: Observation	tooltip	An event in which qualitative or visual properties of the sample were examined
+S13: Material Sample	P31i_was_modified_by (0 to n)	E11: Sample Modification	|event
+E11: Sample Modification	P31_has_modified (1 to n)	S13: Material Sample
+E11: Sample Modification	tooltip	An event that altered the sample after its initial removal, such as preparation, embedding, or coating.
+E16: Measurement	P94_has_created (0 to n)	E73: Output	|digital2
+S27: Observation	P94_has_created (0 to n)	E73: Output
+E11: Sample Modification	P94_has_created (0 to n)	E73: Output
+E73: Output	P2_has_type (1 to n)	measurement output<br/>observation record<br/>modification record<br/>data	|type
+//Dual-layer: Curated Sample Item (object) that carries/contains the S13 material sample
+S2: Sample Taking	P94_has_created (1 to n)	E22: Physical Sample
+E22: Physical Sample	P46_is_composed_of (1 to n)	S13: Material Sample	|object
+S13: Material Sample	P46i_forms_part_of (1 to 1)	E22: Physical Sample
+//Sample Site is the former location of the curated sample item (optional but often useful)
+E26: Sample Site	P53i_is_former_or_current_location_of (1 to n)	E22: Physical Sample
+E22: Physical Sample	P53_has_former_or_current_location (0 to n)	E26: Sample Site
+//Optional: current storage location of the curated sample item
+E22: Physical Sample	P55_has_current_location (0 to 1)	E53: Storage Location	|place
+E53: Storage Location	tooltip	A current storage place/location for the curated sample item (e.g. store room, cabinet, drawer, institution).
+//Dual-layer for sub-sample: new curated item for the new S13
+S24: Sample Splitting	P94_has_created (1 to n)	E22: Physical Sample#-1
+E22: Physical Sample#-1	P46_is_composed_of (1 to n)	S13: Material Sample#-1
+S13: Material Sample#-1 P46i_forms_part_of (1 to 1) E22: Physical Sample#-1
+//end sg2-5-5

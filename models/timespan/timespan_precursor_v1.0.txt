@@ -1,0 +1,5 @@
+E12: Production event (e.g. "Ambassadors")	P4	E52: Timespan (e.g. "about 1511-1514")
+E12: Production event (e.g. "Ambassadors")	P108	E22: Human made object (e.g. painting "Ambassadors")
+E13: Attribute assignment (E.g. "Assignment of about 1511-1514 to production of painting")	P140	E12: Production event (e.g. "Ambassadors")
+E13: Attribute assignment (E.g. "Assignment of about 1511-1514 to production of painting")	P2	E55: Type ("probably")
+E13: Attribute assignment (E.g. "Assignment of about 1511-1514 to production of painting")	P177	E52: Timespan (e.g. "about 1511-1514")

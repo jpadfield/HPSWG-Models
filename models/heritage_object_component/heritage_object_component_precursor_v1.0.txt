@@ -1,0 +1,17 @@
+PAINTING COMPONENT
+Not yet released to Kartography<br/>Individual sub part of a painting that has been studied or discussed. Not a human-made object.
+Field Name	Description and purpose of Field	Mapping to RS interface (tbc by Kartography)	Notes from Kartography
+Painting	Reference to the painting that has this painting component
+Paint part	Reference to the painting part that has this painting component
+Painting layer	Reference to the painting part that has this painting component
+Paint component ID
+Paint component name
+Paint component type	Controlled list?
+Paint component order	Not sure how this would work
+Painting component description	Optional
+Composition: calcium carbonate	Lint to Materials 
+Colour: off-white	Can be Generic
+Amount: major	Component Only
+Particle Size: fine	Component Only
+	Of Specific Component Partical
+	And All of the Components of a type within a part

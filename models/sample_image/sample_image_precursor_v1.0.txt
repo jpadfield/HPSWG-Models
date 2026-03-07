@@ -1,0 +1,15 @@
+SAMPLE IMAGE
+Form for metadata about image. Should be filled in automatically (for modern images) but may need editing
+Field Name	Description and purpose of Field	Mapping to RS interface (tbc by Kartography)
+Painting inventory number	link to collection
+Sample identification number	varies by institution where sample was taken: usually 1,2,3, etc.
+Subdivision of sample	if used: e.g., 1a, 1b, 2a, etc.
+filename of image	can contain metadata
+[additional fields provided by instruments/camera]
+image source	institution (or person)
+image owner	the legal owner
+credit line
+resolution
+copyright notice
+rights usage terms
+description	free text

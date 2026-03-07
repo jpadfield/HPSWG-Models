@@ -1,0 +1,40 @@
+//flowchart LR
+E11: Modification	tooltip	An activity that altered a physical thing without bringing a new object into existence (e.g., embedding, polishing, coating, retouching).
+E11: Modification	has note	Document Note: Modification Model Overview
+Document Note: Modification Model Overview	tooltip	This model records an alteration event affecting a physical thing (sample or painting). It captures identification, description, event typing, responsible actors, time and place, the thing modified, methods/protocols followed, materials used, tools/equipment employed, and the documentary evidence supporting the event.
+//subgraph Linked Entities
+E18: Modified Thing	tooltip	The physical thing that was altered by the modification (e.g., a sample or a painting).
+E39: Modifier (Actor)	tooltip	The person or institution that carried out the modification.
+E53: Place of Modification	tooltip	The place where the modification activity occurred (e.g., lab, studio).
+E31: Modification Documents	tooltip	Documents that describe or evidence the modification (e.g., treatment notes, SOPs, reports).
+E29: Method / Protocol	tooltip	A defined method or protocol followed during the modification.
+E57: Material Used	tooltip	Materials consumed or applied in the modification (e.g., resin, polish, varnish).
+E70: Tool / Equipment	tooltip	Specific tools or equipment used during the modification.
+//end sg1
+// Identification & description
+E11: Modification	P48_has_preferred_identifier (1 to 1)	E42: Persistent Identifier (PID)
+E42: Persistent Identifier (PID)	P2_has_type (1 to 1)	aat:300387580
+E11: Modification	P1_is_identified_by (1 to 1)	E41: Unique System Label
+E41: Unique System Label	tooltip	ResearchSpace required label.
+E11: Modification	P67i_is_referred_to_by (0 to n)	E73: Description Text
+E73: Description Text	P45i_is incorporated in (0 to n)	E31: Modification Documents
+// Typing	evidence	and protocol
+E11: Modification	P2_has_type (1 to n)	E55: modification type
+E55: modification type	tooltip	A controlled type/category for the modification (e.g., embedding, polishing, coating, retouching).
+E11: Modification	P67i_is_referred_to_by (0 to n)	E31: Modification Documents
+E11: Modification	P70i_is_documented_in (0 to n)	E31: Modification Documents
+E11: Modification	P33_used_specific_technique (0 to n)	E29: Method / Protocol
+E11: Modification	P32_used_general_technique (0 to n)	E55: technique
+E55: technique	tooltip	High-level technique categories (e.g., grinding, polishing, coating).
+// Core event relations
+E11: Modification	P31_has_modified (1 to 1)	E18: Modified Thing
+E11: Modification	P14_carried_out_by (1 to n)	E39: Modifier (Actor)
+E11: Modification	P7_took_place_at (1 to 1)	E53: Place of Modification
+E11: Modification	P4_has_time-span (1 to 1)	E52: Modification Date
+E52: Modification Date	tooltip	The timespan during which the modification occurred.
+// Materials and tools (optional but recommended)
+E11: Modification	P126_employed (0 to n)	E57: Material Used
+E11: Modification	P16_used_specific_object (0 to n)	E70: Tool / Equipment
+E11: Modification	P125_used_object_of_type (0 to n)	E55: tool/equipment
+E55: tool/equipment	tooltip	Type/category of tool or equipment (e.g., microtome, polisher, sputter coater).
+// Needs to have option for the destruction of a sample and the possible creation of new samples, say one split in two.

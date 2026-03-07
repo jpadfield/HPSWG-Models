@@ -1,0 +1,3 @@
+SAMPLE COMPONENT
+Individual sub part of a sample that has been studied or discussed
+Field Name	Description and purpose of Field	Mapping to RS interface (tbc by Kartography)	Notes from Kartography

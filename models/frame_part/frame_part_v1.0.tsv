@@ -1,0 +1,44 @@
+//subgraph header title note and legend
+Frame Parts Model	subgraph	Frame Parts	object|note
+Frame Parts	subgraph title	Top-level Frame Parts (CIDOC CRM + CRMsci)	note|note
+Frame Parts	has note	Use P46 for structural parts, P198 for mechanical support (painting↔frame), P56 only for surface features.	note|note
+Frame Parts	has legend	Formats: object=E22 Human-Made Object; object_bn=S20 Rigid Physical Feature (linked with P46); place_bn=S20 Rigid Physical Feature (linked with P56); idea_bn=to review/interpretive.	note|note
+Frame Parts	has legend	Properties: P46=is composed of (part–whole); P198=holds or supports (mechanical support between distinct objects); P56=bears feature (inseparable surface/embedded feature).	note|note
+//end sg2
+Frame Parts	contains node	Frame (E22)	note|object
+Frame (E22)	P46 is composed of	Frame Structure (primary member) (E22)	object|object
+Frame (E22)	P46 is composed of	Reinforcing/Secondary Members (E22)	object|object
+Frame (E22)	P46 is composed of	Joints/Connections (within frame structure) (S20)	object|object_bn
+Frame (E22)	P46 is composed of	Fixtures/Fittings/Hardware (E22)	object|object
+Frame (E22)	P46 is composed of	Addition/Extension (integrated) (S20)	object|object_bn
+Frame (E22)	P46 is composed of	Addition/Extension (separable) (E22)	object|object
+Frame (E22)	P46 is composed of	Restoration Additions (general) (E22)	object|object
+# Frame rebate and integral decoration as features
+Frame (E22)	P56 bears feature	Frame Rebate (S20)	object|place_bn
+Frame (E22)	P56 bears feature	Integral Decoration (carving, moulding) (S20)	object|place_bn
+# Surface systems (shared labels retained)
+Frame (E22)	P46 is composed of	Ground/Preparation (S20)	object|object_bn
+Ground/Preparation (S20)	P46 is composed of	Ground/Preparation Layer (S20)	object_bn|object_bn
+Frame (E22)	P46 is composed of	Surface Coatings (S20)	object|object_bn
+Surface Coatings (S20)	P46 is composed of	Gilding Layer (S20)	object_bn|object_bn
+Surface Coatings (S20)	P46 is composed of	Paint/Decorative Coating Layer (S20)	object_bn|object_bn
+Surface Coatings (S20)	P46 is composed of	Protective/Barrier Layer (S20)	object_bn|object_bn
+Protective/Barrier Layer (S20)	P46 is composed of	Varnish Layer (S20)	object_bn|object_bn
+Surface Coatings (S20)	P56 bears feature	Surface Dirt/Accretion/Efflorescence (S20)	object|place_bn
+# Glazing / backboard / microclimate sealing
+Frame (E22)	P46 is composed of	Glazing (E22)	object|object
+Frame (E22)	P46 is composed of	Backboard (E22)	object|object
+Frame (E22)	P46 is composed of	Sealing System (microclimate barrier) (E22)	object|object
+Sealing System (microclimate barrier) (E22)	P56 bears feature	Sealing Joints/Tape (S20)	object|place_bn
+# Repairs & restoration specifics
+Restoration Additions (general) (E22)	P46 is composed of	Repairs/Mends to Support (S20)	object|idea_bn
+Restoration Additions (general) (E22)	P46 is composed of	Restoration Retouch/Reconstruction (S20)	object|idea_bn
+# Mechanical support (reciprocal of painting↔frame)
+Frame (E22)	P198 holds or supports	Painting (E22)	object|object
+# Markings/features on frame
+Frame (E22)	P56 bears feature	Tool Marks/Carving Traces (S20)	object|place_bn
+Frame (E22)	P56 bears feature	Inscriptions/Numbers (painted/incised) (S20)	object|place_bn
+Frame (E22)	P56 bears feature	Seals/Stamps/Impressions (S20)	object|place_bn
+Frame (E22)	P56 bears feature	Sample Sites/Voids (S20)	object|place_bn
+# Labels and attachments
+Frame (E22)	P46 is composed of	Label/Seal (attached object) (E22)	object|object

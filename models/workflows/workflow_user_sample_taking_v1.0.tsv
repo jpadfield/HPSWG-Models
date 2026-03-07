@@ -1,0 +1,47 @@
+//Flowchart TB
+Decision to Sample a Selected Painting	begin	Sampling Event	idea_bn-fs24|event_bn-fs24
+//subgraph Physical Sampling
+Sampling Event	note	Required event metadata	|thing
+Sampling Event	tooltip	Required equipment gathered in front of Painting
+Sampling Event	select	Heritage Object	|object_bn-fs24
+Heritage Object	select	Sample Site	|place_bn-fs24
+Sample Site	carry out	Sample Taking	|event_bn-fs24
+Sample Site	capture	Additional site images	|digital2
+Sample Site	note	Required site metadata	|thing
+Sample Taking	note	Required sample taking metadata	|thing
+Sample Taking	create	Sample	|object_bn-fs24
+Sample	check	Are More Samples Needed	|sg2
+Are More Samples Needed	yes - select	Sample Site
+//end sg2-5-5
+Are More Samples Needed	no	Return to Lab with gathered samples and information.	|event_bn
+Return to Lab with gathered samples and information.	-	Open ResearchSpace	|dims2
+Open ResearchSpace	tooltip	For sample documentation we are assuming that the required paintings, images, people, etc have all been added to ResearchSpace already.
+Open ResearchSpace	create the	Sampling Event#-1	|event-fs24
+//subgraph Documentation
+Sampling Event#-1	enter	Required event metadata#-1	event-fs24|digital2
+Sampling Event#-1	tooltip	This metadata relates to the overall sampling event at object level, ie all samples taken at one time rather than individual samples. The purpose of this separate category in addition to ‘sample taking’ is to avoid having to copy/paste general info at the individual sample level.
+Sampling Event#-1	link to	Project#-1	|idea-fs24
+Project#-1	tooltip	This metadata relates to a high-level grouping used to associate multiple sampling events carried out within the same research, conservation, catalogue, exhibition, or documentation context. The purpose of this category is to record shared contextual information without repeating it at the sampling event or individual sample level.
+Sampling Event#-1	select	Heritage Object#-1	|object-fs24
+Sampling Event#-1	create record	Sample Taking#-1	|event-fs24
+Sample Taking#-1	tooltip	This metadata relates to individual samples taken within an overall sampling event. The purpose of this separate category is to avoid having to copy/paste more general info at the individual sample level
+Sample Taking#-1	enter	Required sample taking metadata#-1	|digital2
+Sample Taking#-1	select	Annotation Image	|digital2-fs24
+Annotation Image	mark	Sample Site Annotation	|place2-fs24
+Sample Site Annotation	create record	Sample Site#-1	|place-fs24
+//Sample Site#-1	link to	Sample Site Annotation	|place-fs24
+Sample Site#-1	enter	Required site metadata#-1	|digital2
+Sample Site#-1	upload	Additional site images#-1	|digital2
+Sample Site#-1	create record	Sample#-1	|object-fs24
+Sample#-1	link to	Sample Taking#-1
+Sample#-1	enter	Required sample metadata#-1	|digital2
+//Sample#-1	link to	Sample Site#-1
+Sample#-1	link to	Heritage Object#-1
+//Sample Site#-1	link to	Sample#-1
+//Heritage Object#-1	link to	Sample#-1
+Sample#-1	check	More Samples to document	|sg2
+More Samples to document	yes	Sampling Event#-1
+//end sg2-5-5
+More Samples to document	no	Review Complete Documentation	|sg2
+Review Complete Documentation	incomplete	Sampling Event#-1
+Review Complete Documentation	complete	Documentation complete	|infoobj-fs24

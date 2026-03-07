@@ -1,6 +1,6 @@
-# Workflows
+# User workflows
 
-![Semantic Workflow](https://img.shields.io/badge/type-semantic--workflow-blue)
+![User Workflow](https://img.shields.io/badge/type-user--workflow-blueviolet)
 
 This folder contains versioned model files for use with the [National Gallery Dynamic Modeller](https://research.nationalgallery.org.uk/lab/modelling/). Models are expressed as tab-separated triples aligned to CIDOC CRM and related extension ontologies.
 
@@ -18,11 +18,11 @@ See [`ONTOLOGIES.md`](../ONTOLOGIES.md) for full version details, source links, 
 ## Model versions
 
 <details>
-<summary><strong>Workflows</strong>: latest version <a href="https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/workflows/workflow_cidoc_sample_taking_v1.0.tsv">v1.0</a></summary>
+<summary><strong>User workflows</strong>: latest version <a href="https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/user_workflows/workflow_user_sample_taking_v1.0.tsv">v1.0</a></summary>
 
 | | Version | Created | Last modified | Open in Modeller |
 | :---: | :---: | :---: | :---: | --- |
-| :heavy_check_mark: | v1.0 | 2026-03-07 | 2026-03-07 | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/workflows/workflow_cidoc_sample_taking_v1.0.tsv) |
+| :heavy_check_mark: | v1.0 | 2026-03-07 | 2026-03-07 | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/user_workflows/workflow_user_sample_taking_v1.0.tsv) |
 
 </details>
 

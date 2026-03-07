@@ -1,6 +1,6 @@
 # Model Consistency Report
 
-_Generated: 2026-03-07 16:12 UTC_
+_Generated: 2026-03-07 16:45 UTC_
 
 **Individual model files analysed:** 13  
 **Workflow/overview files analysed:** 1  
@@ -9,20 +9,70 @@ This report identifies potential inconsistencies in node naming across the HPSWG
 
 ---
 
-## 1. Workflow/overview vs individual model discrepancies
+## 1. Model update checklist
 
-These are cases where the workflow (overview) TSV uses a different label than one or more individual models for a node with the same CRM class code connected via the same property. These are the highest-priority candidates for review, as they represent likely inter-model join breaks.
+Each entry below lists an individual model file that contains node labels which differ from the canonical labels used in the workflow/overview TSV. The workflow is treated as the reference. Update the model file to use the canonical label, then increment its version number.
 
-| Property | Class code | Workflow label(s) | Individual model label(s) | Files affected |
-| --- | --- | --- | --- | --- |
-| `O3_sampled_from (1 to 1)` | `E22` | `Heritage Object` | `Heritage Object`: sample_taking_event/sample_taking_event_v1.4.tsv<br/>`Painting` ⚠: sample/sample_v1.5.tsv | 2 |
-| `P138i_has_representation (0 to n)` | `E22` | `Heritage Object<br/>Physical Sample` | `Heritage Object`: heritage_object/heritage_object_v1.3.tsv | 1 |
-| `P138i_has_representation (0 to n)` | `E26` | `Sample Site` | `Area of Interest` ⚠: sample_site/sample_site_v1.4.tsv<br/>`Sample Site`: sample_site/sample_site_v1.4.tsv | 1 |
-| `P55_has_current_location (0 to 1)` | `E53` | `Storage Location` | `Institution or Address` ⚠: sample/sample_v1.5.tsv | 1 |
-| `P2_has_type (1 to 1)` | `E55` | `IIIF selector point (image-space)` | `Identifier Type` ⚠: location/location_v1.0.tsv, person/person_v0.9.tsv<br/>`condition state type` ⚠: project/project_v1.0.tsv, sample/sample_v1.5.tsv, sample_taking_event/sample_taking_event_v1.4.tsv, sampling_event/sampling_event_v1.1.tsv<br/>`family-name` ⚠: person/person_v0.9.tsv<br/>`given-name` ⚠: person/person_v0.9.tsv<br/>`honorific-title` ⚠: person/person_v0.9.tsv<br/>`sample format` ⚠: sample/sample_v1.5.tsv<br/>`sample material type` ⚠: sample/sample_v1.5.tsv | 6 |
-| `P168_place_is_defined_by (0 to n)` | `E94` | `Sampling Point` | `Geometry (Space Primitive)` ⚠: location/location_v1.0.tsv | 1 |
-| `P138i_has_representation (0 to n)` | `EX_Digital_Image` | `Analytical Sample Image<br/>Annotation Image<br/>Sample Image` | `Object Image` ⚠: heritage_object/heritage_object_v1.3.tsv<br/>`Sample Image`: sample/sample_v1.5.tsv<br/>`Site Image` ⚠: sample_site/sample_site_v1.4.tsv | 3 |
-| `O5_removed (1 to 1)` | `S13` | `Material Sample` | `Sample` ⚠: sample_taking_event/sample_taking_event_v1.4.tsv | 1 |
+**Models requiring updates:** 8  
+**Total label changes needed:** 18  
+
+### `heritage_object/heritage_object_v1.3.tsv`
+
+| Class code | Current label | Change to |
+| --- | --- | --- |
+| `EX_Digital_Image` | `Object Image` | `Analytical Sample Image` or `Annotation Image` or `Sample Image` |
+
+### `location/location_v1.0.tsv`
+
+| Class code | Current label | Change to |
+| --- | --- | --- |
+| `E55` | `Identifier Type` | `IIIF selector point (image-space)` |
+| `E94` | `Geometry (Space Primitive)` | `Sampling Point` |
+
+### `person/person_v0.9.tsv`
+
+| Class code | Current label | Change to |
+| --- | --- | --- |
+| `E55` | `Identifier Type` | `IIIF selector point (image-space)` |
+| `E55` | `family-name` | `IIIF selector point (image-space)` |
+| `E55` | `given-name` | `IIIF selector point (image-space)` |
+| `E55` | `honorific-title` | `IIIF selector point (image-space)` |
+
+### `project/project_v1.0.tsv`
+
+| Class code | Current label | Change to |
+| --- | --- | --- |
+| `E55` | `condition state type` | `IIIF selector point (image-space)` |
+
+### `sample/sample_v1.5.tsv`
+
+| Class code | Current label | Change to |
+| --- | --- | --- |
+| `E22` | `Painting` | `Heritage Object` |
+| `E53` | `Institution or Address` | `Storage Location` |
+| `E55` | `condition state type` | `IIIF selector point (image-space)` |
+| `E55` | `sample format` | `IIIF selector point (image-space)` |
+| `E55` | `sample material type` | `IIIF selector point (image-space)` |
+
+### `sample_site/sample_site_v1.4.tsv`
+
+| Class code | Current label | Change to |
+| --- | --- | --- |
+| `E26` | `Area of Interest` | `Sample Site` |
+| `EX_Digital_Image` | `Site Image` | `Analytical Sample Image` or `Annotation Image` or `Sample Image` |
+
+### `sample_taking_event/sample_taking_event_v1.4.tsv`
+
+| Class code | Current label | Change to |
+| --- | --- | --- |
+| `E55` | `condition state type` | `IIIF selector point (image-space)` |
+| `S13` | `Sample` | `Material Sample` |
+
+### `sampling_event/sampling_event_v1.1.tsv`
+
+| Class code | Current label | Change to |
+| --- | --- | --- |
+| `E55` | `condition state type` | `IIIF selector point (image-space)` |
 
 ## 2. Predicate-scoped label variants across individual models
 

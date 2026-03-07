@@ -1,109 +1,25 @@
-# Heritage Science Modelling at the National Gallery
+# HPSWG Models
 
-This repository defines a set of semantic models describing paintings, samples, and associated
-heritage-science entities. The goal is to support clear documentation, interoperability, and
-FAIR-aligned data sharing across the National Gallery, RICHeS partners, and potential future
-collaborations such as the ECHOES project.
+This folder contains the semantic data models developed by the Heritage and Paintings Science Working Group (HPSWG) at the National Gallery, London. Models are expressed as tab-separated triple files (TSV) aligned to CIDOC CRM and related extension ontologies, and are designed for use with the [National Gallery Dynamic Modeller](https://research.nationalgallery.org.uk/lab/modelling/).
 
-All models are defined as **CIDOC CRM-aligned** triple structures using simple TSV files and are
-designed for use with the **National Gallery Dynamic Modeller**. These models support ongoing work
-to prepare and publish research data through platforms such as **ResearchSpace** and the **HSDS**
-(UKRI RICHeS) repository.
+## How this folder is organised
 
-Work on these models is supported by **UKRI RICHeS – Heritage Science Data Service (HSDS)** funding,
-with contributions from researchers, conservators, and technical specialists across partner
-institutions. Additional collaborators will be acknowledged as models continue to evolve.
+Each subfolder represents a model domain. A folder may contain:
 
----
+- **Formed models** (`.tsv` files) -- fully mapped CIDOC CRM triples, ready for visualisation in the Dynamic Modeller
+- **Precursor files** (`.txt` files) -- field mapping tables and draft notes representing models in early development
+- **Planned folders** -- reserved for future work, currently empty
 
-## Visual Overview of All Models
+The top of this page also lists the NG-wide overview model, which visualises connections across all model domains.
 
-<!-- BEGIN AUTO: NG-MODEL-VISUAL -->
-```mermaid
-%%{init: {'flowchart': {'wrappingWidth': 600}}}%%
-flowchart LR
-classDef object stroke:#2C5D98,fill:#2C5D98,color:white,rx:5px,ry:5px;
-classDef event stroke:#5C811F,fill:#5C811F,color:white,rx:5px,ry:5px;
+## Ontologies in use
 
+<!-- BEGIN AUTO: ONTOLOGY-REF -->
+_Ontology reference will be generated here._
+<!-- END AUTO: ONTOLOGY-REF -->
 
-O0("Heritage Sample<br>S13_Sample and<br>E19_Physical_object")
-class O0 object;
+## Model index
 
-O1("Sample Taking<br>S2_Sample_Taking")
-class O1 event;
-O0["Heritage Sample<br>S13_Sample and<br>E19_Physical_object"] -- "O5i_was_removed_by #40;1 to 1#41;" -->O1["Sample Taking<br>S2_Sample_Taking"]
-
-O2("Heritage Object<br>E22_Human-Made Object")
-class O2 object;
-O1["Sample Taking<br>S2_Sample_Taking"] -- "O3_sampled_from #40;1 to 1#41;" -->O2["Heritage Object<br>E22_Human-Made Object"]
-
-O3("Sample Splitting<br>S24_Sample_splitting")
-class O3 event;
-O0["Heritage Sample<br>S13_Sample and<br>E19_Physical_object"] -- "O1i_was_diminished_by #40;0 to 1#41;" -->O3["Sample Splitting<br>S24_Sample_splitting"]
-
-O4("Heritage Sample<br>S13_Sample and<br>E19_Physical_object#-1")
-class O4 object;
-O3["Sample Splitting<br>S24_Sample_splitting"] -- "O29_removed_sub-sample #40;1 to n#41;" -->O4["Heritage Sample<br>S13_Sample and<br>E19_Physical_object"]
-;
-```
-<!-- END AUTO: NG-MODEL-VISUAL -->
-
----
-
-## Available Models
-
-The following models are defined in this repository.  
-Each entry links to its model page, the latest raw TSV file, and the interactive visualisation
-in the Dynamic Modeller.
-
-<!-- BEGIN AUTO: MODEL-LIST -->
-| Model | Folder | Latest TSV | Visualisation |
-|-------|--------|-----------|---------------|
-| Frame part Model | [`models/frame_part`](models/frame_part) | [v1.0](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/frame_part/frame_part_v1.0.tsv) | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/frame_part/frame_part_v1.0.tsv) |
-| Heritage object Model | [`models/heritage_object`](models/heritage_object) | [v1.3](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/heritage_object/heritage_object_v1.3.tsv) | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/heritage_object/heritage_object_v1.3.tsv) |
-| Heritage object part Model | [`models/heritage_object_part`](models/heritage_object_part) | [v1.0](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/heritage_object_part/heritage_object_part_v1.0.tsv) | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/heritage_object_part/heritage_object_part_v1.0.tsv) |
-| Location Model | [`models/location`](models/location) | [v1.0](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/location/location_v1.0.tsv) | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/location/location_v1.0.tsv) |
-| Old samples Model | [`models/old_samples`](models/old_samples) | [v1.1](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/old_samples/sample_model_v1.1.tsv) | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/old_samples/sample_model_v1.1.tsv) |
-| Person Model | [`models/person`](models/person) | [v0.9](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/person/person_v0.9.tsv) | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/person/person_v0.9.tsv) |
-| Production event Model | [`models/production_event`](models/production_event) | [v1.0](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/production_event/production_event_v1.0.tsv) | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/production_event/production_event_v1.0.tsv) |
-| Project Model | [`models/project`](models/project) | [v1.0](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/project/project_v1.0.tsv) | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/project/project_v1.0.tsv) |
-| Sample Model | [`models/sample`](models/sample) | [v1.5](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sample/sample_v1.5.tsv) | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sample/sample_v1.5.tsv) |
-| Sample modification Model | [`models/sample_modification`](models/sample_modification) | [v1.3](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sample_modification/sample_modification_v1.3.tsv) | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sample_modification/sample_modification_v1.3.tsv) |
-| Sample site Model | [`models/sample_site`](models/sample_site) | [v1.4](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sample_site/sample_site_v1.4.tsv) | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sample_site/sample_site_v1.4.tsv) |
-| Sample storage unit Model | [`models/sample_storage_unit`](models/sample_storage_unit) | [v1.0](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sample_storage_unit/sample_storage_unit_v1.0.tsv) | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sample_storage_unit/sample_storage_unit_v1.0.tsv) |
-| Sample taking event Model | [`models/sample_taking_event`](models/sample_taking_event) | [v1.4](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sample_taking_event/sample_taking_event_v1.4.tsv) | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sample_taking_event/sample_taking_event_v1.4.tsv) |
-| Sampling event Model | [`models/sampling_event`](models/sampling_event) | [v1.1](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sampling_event/sampling_event_v1.1.tsv) | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sampling_event/sampling_event_v1.1.tsv) |
-| Workflows Model | [`models/workflows`](models/workflows) | [v1.0](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/workflows/workflow_cidoc_sample_taking_v1.0.tsv) | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/workflows/workflow_cidoc_sample_taking_v1.0.tsv) |
-<!-- END AUTO: MODEL-LIST -->
-
----
-
-## How to Use These Models
-
-1. Open any TSV file directly in the Dynamic Modeller using the “Visualisation” links above.  
-2. Review the model-specific page to explore version history and related documentation.  
-3. Use these models as a starting point for:
-   - ResearchSpace ingestion
-   - FAIR data packaging in HSDS
-   - ECHOES Digital Twin prototyping
-   - Internal NG interoperability work
-4. Models are intentionally simple to enable discussion and refinement.  
-   CIDOC CRM alignment will be strengthened in future iterations.
-
----
-
-## Design Principles
-
-- **CIDOC CRM v7.1.3 alignment**
-- **Modular, extensible structure**
-- **Transparent and easy to review**
-- **Supports FAIR Digital Object approaches**
-- **Designed for cross-project reusability**
-
----
-
-## Acknowledgements
-
-This work is supported by **UKRI – RICHeS HSDS** and builds on ongoing collaboration with the
-National Gallery’s Heritage Science team and wider partners.  
-Additional contributors will be acknowledged as the models evolve.
+<!-- BEGIN AUTO: MODEL-FOLDERS -->
+_Model folder index will be generated here._
+<!-- END AUTO: MODEL-FOLDERS -->

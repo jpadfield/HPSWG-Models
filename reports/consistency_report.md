@@ -1,6 +1,6 @@
 # Model Consistency Report
 
-_Generated: 2026-03-07 20:20 UTC_
+_Generated: 2026-03-07 20:31 UTC_
 
 **Individual model files analysed:** 13  
 **Workflow/overview files analysed:** 1  
@@ -21,19 +21,20 @@ This report checks consistency of inter-model linking nodes declared in each mod
 Each model's linked entities are listed with their declared target models and consistency status. Where no `//links` declaration exists, possible targets are suggested based on matching class codes.
 
 <details>
-<summary><strong>heritage_object/heritage_object_v1.3.tsv</strong></summary>
+<summary><strong>heritage_object/heritage_object_v1.4.tsv</strong></summary>
 
 | Linked entity | Class code | Declared target(s) | Status |
 | --- | --- | --- | --- |
-| `E39: Institution or Person` | `E39` | _No matching models found_ | ⚠ No declaration |
-| `E53: Institution or Place` | `E53` | _Suggested: `location` (`E53: Location`)_ | ⚠ No declaration |
+| `E39: Institution or Person` | `E39` | `person` → `E21: Person` | 🔵 Hierarchy match -- confirm intent |
+|  |  | `institution` → -- | ❓ Target folder not found in repo |
+| `E53: Institution or Place` | `E53` | `location` → `E53: Location` | ✅ Consistent |
 | `E54: Dimensions` | `E54` | _No matching models found_ | ⚠ No declaration |
 | `E78: Collection (Curated Holding)` | `E78` | _No matching models found_ | ⚠ No declaration |
 | `E31: Report or Document` | `E31` | _No matching models found_ | ⚠ No declaration |
 | `E57: Medium` | `E57` | _No matching models found_ | ⚠ No declaration |
 | `E57: Other Material` | `E57` | _No matching models found_ | ⚠ No declaration |
-| `E22: Support` | `E22` | _Suggested: `sample_storage_unit` (`E22: Storage Unit`)_ | ⚠ No declaration |
-| `E12: Production Event` | `E12` | _Suggested: `production_event` (`E12: Production`)_ | ⚠ No declaration |
+| `E22: Support` | `E22` | `heritage_object_part` → -- | ⚠️ Class mismatch -- check required |
+| `E12: Production Event` | `E12` | `production_event` → `E12: Production` | ✅ Consistent |
 | `EX_Digital_Image: Main Object Image` | `EX_Digital_Image` | _No matching models found_ | ⚠ No declaration |
 | `EX_Digital_Image: Object Image` | `EX_Digital_Image` | _No matching models found_ | ⚠ No declaration |
 

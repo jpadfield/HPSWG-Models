@@ -1,6 +1,6 @@
 # Model Consistency Report
 
-_Generated: 2026-03-07 21:05 UTC_
+_Generated: 2026-03-07 21:06 UTC_
 
 **Individual model files analysed:** 13  
 **Workflow/overview files analysed:** 1  
@@ -65,13 +65,12 @@ Each model's linked entities are listed with their declared target models and co
 </details>
 
 <details>
-<summary><strong>location/location_v1.1.tsv</strong> -- 2 confirmed, 1 undeclared</summary>
+<summary><strong>location/location_v1.1.tsv</strong> -- 2 confirmed</summary>
 
 | Linked entity | Class code | Declared target(s) | Status |
 | --- | --- | --- | --- |
 | `E31: Location Documents` | `E31` | `crm:E31` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
-| `E94: Geometry (Space Primitive)` | `E94` | _No matching models found_ | ⚠ No declaration |
-| `E94: Geometry` | `E94` | `crm:E94` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
+| `E94: Geometry (Space Primitive)` | `E94` | `crm:E94` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
 
 </details>
 

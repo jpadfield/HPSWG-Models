@@ -134,10 +134,21 @@ def parse_targets(raw: str) -> List[str]:
     """
     Parse the target side of a //links directive.
     'person, institution' or 'person or institution' -> ['person', 'institution']
+    Ontology references (e.g. 'crm:E31', 'crmsci:S13') are preserved as-is.
     """
     raw = raw.strip()
     parts = re.split(r"\s+or\s+|,\s*", raw, flags=re.IGNORECASE)
-    return [p.strip().lower() for p in parts if p.strip()]
+    return [p.strip() for p in parts if p.strip()]
+
+
+def is_ontology_ref(target: str) -> bool:
+    """Return True if target is an ontology reference like 'crm:E31' or 'crmsci:S13'."""
+    return ":" in target
+
+
+def ontology_class_code(target: str) -> str:
+    """Extract class code from an ontology reference: 'crm:E31' -> 'E31'."""
+    return target.split(":", 1)[1].strip()
 
 
 # ---------------------------------------------------------------------------
@@ -334,14 +345,33 @@ def analyse(
             if le.declared_targets:
                 # Evaluate each declared target
                 target_checks: List[Dict] = []
-                for target_folder in le.declared_targets:
-                    target_ma = by_folder.get(target_folder)
+                for target in le.declared_targets:
+                    if is_ontology_ref(target):
+                        # Ontology reference -- check class code matches
+                        ref_code = normalise_code(ontology_class_code(target))
+                        if norm_code == ref_code:
+                            status = "ontology_ref"
+                        elif are_related(norm_code, ref_code, hierarchy):
+                            status = "ontology_hierarchy"
+                        else:
+                            status = "ontology_mismatch"
+                        target_checks.append({
+                            "folder": target,
+                            "status": status,
+                            "target_key": None,
+                            "target_code": ref_code,
+                            "is_ontology": True,
+                        })
+                        continue
+
+                    target_ma = by_folder.get(target.lower())
                     if target_ma is None:
                         target_checks.append({
-                            "folder": target_folder,
+                            "folder": target,
                             "status": "unknown_target",
                             "target_key": None,
                             "target_code": None,
+                            "is_ontology": False,
                         })
                         continue
 
@@ -357,10 +387,11 @@ def analyse(
                         status = "class_mismatch"
 
                     target_checks.append({
-                        "folder": target_folder,
+                        "folder": target,
                         "status": status,
                         "target_key": target_key,
                         "target_code": target_code,
+                        "is_ontology": False,
                     })
 
                 entity_results.append({
@@ -402,18 +433,28 @@ def analyse(
 # ---------------------------------------------------------------------------
 
 STATUS_ICONS = {
-    "consistent":      "✅",
-    "hierarchy_match": "🔵",
-    "class_mismatch":  "⚠️",
-    "unknown_target":  "❓",
+    "consistent":         "✅",
+    "hierarchy_match":    "🔵",
+    "class_mismatch":     "⚠️",
+    "unknown_target":     "❓",
+    "ontology_ref":       "📖",
+    "ontology_hierarchy": "📖🔵",
+    "ontology_mismatch":  "📖⚠️",
 }
 
 STATUS_NOTES = {
-    "consistent":      "Consistent",
-    "hierarchy_match": "Hierarchy match -- confirm intent",
-    "class_mismatch":  "Class mismatch -- check required",
-    "unknown_target":  "Target folder not found in repo",
+    "consistent":         "Consistent",
+    "hierarchy_match":    "Hierarchy match -- confirm intent",
+    "class_mismatch":     "Class mismatch -- check required",
+    "unknown_target":     "Target folder not found in repo",
+    "ontology_ref":       "Ontology reference -- follows standard CRM structure",
+    "ontology_hierarchy": "Ontology reference via hierarchy -- confirm intent",
+    "ontology_mismatch":  "Ontology reference class mismatch -- check required",
 }
+
+# Statuses that count as positive for the accordion summary
+POSITIVE_STATUSES = {"consistent", "ontology_ref"}
+PARTIAL_STATUSES = {"hierarchy_match", "ontology_hierarchy"}
 
 
 def md_row(*cells: str) -> str:
@@ -440,11 +481,38 @@ def generate_report(result: Dict, files: List[ModelFile]) -> str:
         "Only declared linked entities are checked -- high-multiplicity classes "
         "such as E55 type terms are not flagged unless explicitly declared.",
         "",
+        "## Link declaration syntax",
+        "",
+        "Each linked entity in a model's `//subgraph Linked Entities` block should "
+        "have a `//links` directive declaring what it connects to. Two target types "
+        "are supported:",
+        "",
+        "**Repo model targets** -- point to another model folder in this repository:",
+        "```",
+        "//links E39: Project Owner --> person, institution",
+        "//links E7: Parent Project --> project",
+        "```",
+        "",
+        "**Ontology references** -- follow standard CRM/extension ontology structure "
+        "with no bespoke repo model needed:",
+        "```",
+        "//links E31: Related Documents --> crm:E31",
+        "//links E94: Sampling Point --> crmsci:E94",
+        "//links D1: Digital Object --> crmdig:D1",
+        "```",
+        "",
+        "Multiple targets are comma-separated or joined with `or`.",
+        "",
+        "---",
+        "",
         "**Status key:**",
-        "- ✅ Consistent -- class codes match exactly",
-        "- 🔵 Hierarchy match -- related via CRM class hierarchy, confirm intent",
+        "- ✅ Consistent -- repo model, class codes match exactly",
+        "- 🔵 Hierarchy match -- repo model, related via CRM hierarchy, confirm intent",
         "- ⚠️ Class mismatch -- classes not related, check required",
         "- ❓ Unknown target -- declared target folder not found in repo",
+        "- 📖 Ontology reference -- follows standard CRM/extension ontology structure",
+        "- 📖🔵 Ontology via hierarchy -- related class, confirm intent",
+        "- 📖⚠️ Ontology mismatch -- class code does not match reference",
         "- ⚠ No declaration -- `//links` directive missing, suggestions provided",
         "",
         "---",
@@ -468,9 +536,37 @@ def generate_report(result: Dict, files: List[ModelFile]) -> str:
         lines.append("_No individual models with Linked Entities blocks found._\n")
     else:
         for mr in sorted(model_results, key=lambda x: x["model"]):
+            # Compute match summary for accordion header
+            all_checks = [
+                tc
+                for er in mr["entities"]
+                for tc in er.get("target_checks", [])
+            ]
+            declared_count = sum(1 for er in mr["entities"] if er["declared"])
+            total_count = len(mr["entities"])
+            positive = sum(
+                1 for tc in all_checks if tc["status"] in POSITIVE_STATUSES
+            )
+            partial = sum(
+                1 for tc in all_checks if tc["status"] in PARTIAL_STATUSES
+            )
+            undeclared = total_count - declared_count
+
+            if all_checks:
+                summary_parts = []
+                if positive:
+                    summary_parts.append(f"{positive} confirmed")
+                if partial:
+                    summary_parts.append(f"{partial} to review")
+                if undeclared:
+                    summary_parts.append(f"{undeclared} undeclared")
+                summary_str = f" -- {', '.join(summary_parts)}" if summary_parts else ""
+            else:
+                summary_str = f" -- {undeclared} undeclared" if undeclared else ""
+
             lines += [
                 f"<details>",
-                f"<summary><strong>{mr['model']}</strong></summary>",
+                f"<summary><strong>{mr['model']}</strong>{summary_str}</summary>",
                 "",
                 md_row(
                     "Linked entity", "Class code",
@@ -487,12 +583,15 @@ def generate_report(result: Dict, files: List[ModelFile]) -> str:
                     for tc in er["target_checks"]:
                         icon = STATUS_ICONS.get(tc["status"], "?")
                         note = STATUS_NOTES.get(tc["status"], tc["status"])
-                        target_key = (
-                            f"`{tc['target_key']}`" if tc["target_key"] else "--"
-                        )
+                        if tc.get("is_ontology"):
+                            target_cell = f"`{tc['folder']}` (ontology)"
+                        elif tc["target_key"]:
+                            target_cell = f"`{tc['folder']}` → `{tc['target_key']}`"
+                        else:
+                            target_cell = f"`{tc['folder']}`"
                         lines.append(md_row(
                             entity, code,
-                            f"`{tc['folder']}` → {target_key}",
+                            target_cell,
                             f"{icon} {note}",
                         ))
                         entity = ""  # only show entity name on first row

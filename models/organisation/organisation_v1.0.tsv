@@ -1,0 +1,57 @@
+//flowchart LR
+// ========================= ORGANISATION =========================
+E74: Organisation	tooltip	A group or body (formal or informal) acting collectively in a research, institutional, or professional context.	actor-fs32|
+E74: Organisation	has note	Document Note: Organisation Model Overview
+Document Note: Organisation Model Overview	tooltip	This model covers the full range of CRM actor groups: formally constituted legal bodies (E40), informal working groups and initiatives, and funding bodies. Organisations are identified with PIDs and system labels, described with text, typed by sector and legal status, linked to member persons, and associated with a place via the location model.
+//subgraph Linked Entities
+E21: Person (Member)	tooltip	A person who is or was a member of the organisation.	actor-fs24|
+//links E21: Person (Member) --> person
+E53: Location (Place of Organisation)	tooltip	The place associated with the organisation (e.g., headquarters, premises).	place-fs24|
+//links E53: Location (Place of Organisation) --> location
+E31: Organisation Documents	tooltip	Documents or records relating to the organisation (e.g., founding charters, reports, authority records).	document-fs24|
+//links E31: Organisation Documents --> crm:E31
+E74: Parent Organisation	tooltip	Optional parent organisation.	actor-fs24|
+//links E74: Parent Organisation --> organisation
+//end sg1
+// Identification & description
+E74: Organisation	P48_has_preferred_identifier (1 to 1)	E42: Persistent Identifier (PID)	|url
+E74: Organisation	P1_is_identified_by (1 to 1)	E41: Unique System Label or ID	|name
+E41: Unique System Label or ID	tooltip	Required within some documentation or database systems, such as ResearchSpace required label.	name-fs24|
+E74: Organisation	P67i_is_referred_to_by (0 to n)	E73: Description Text	|literal
+E73: Description Text	P45i_is incorporated in (0 to n)	E31: Organisation Documents	|document
+E74: Organisation	P70i_is_documented_in (0 to n)	E31: Organisation Documents	|document
+// Names (preferred and alternative)
+E74: Organisation	P1_is_identified_by (1 to 1)	E41: Preferred Name	|name
+E74: Organisation	P1_is_identified_by (0 to n)	E41: Abbreviation or Acronym	|name
+E74: Organisation	P1_is_identified_by (0 to n)	E41: Alternative Name	|name
+E41: Preferred Name	tooltip	The organisation's full preferred name as an appellation.	name-fs24|
+E41: Abbreviation or Acronym	tooltip	Short form or acronym (e.g., NG, ICOM, E-RIHS).	name-fs24|
+E41: Alternative Name	tooltip	Any other name the organisation is known by, including former names.	name-fs24|
+// External identifiers and web presence
+E74: Organisation	P1_is_identified_by (0 to n)	E42: Organisation Website	|url
+E42: Organisation Website	tooltip	The organisation's primary website URL.	url-fs24|
+E74: Organisation	P1_is_identified_by (0 to n)	E42: Alternative Identifier	|url
+E42: Alternative Identifier	tooltip	Additional identifiers from authority sources (e.g., VIAF, ISNI, Wikidata, ROR, LEI).	url-fs24|
+E42: Persistent Identifier (PID)	tooltip	A globally resolvable identifier for the organisation (e.g., Wikidata QID, ROR ID).	url-fs24|
+// Organisation type and legal status
+E74: Organisation	P2_has_type (0 to n)	E55: Organisation Type	|type
+E74: Organisation	P2_has_type (0 to 1)	E55: Legal Status	|type
+E55: Organisation Type	tooltip	Sector or category of organisation, use controlled terms e.g.: museum, university, funding-body, research-group, working-group, initiative, company, government-body.	type-fs24|
+E55: Legal Status	tooltip	Formal legal standing of the organisation, use controlled terms e.g.: legal-body, registered-charity, informal-group, intergovernmental-organisation.	type-fs24|
+// Membership and parent body
+E74: Organisation	P107_has_current_or_former_member (0 to n)	E21: Person (Member)	|actor
+E74: Organisation	P107i_is_current_or_former_member_of (0 to n)	E74: Parent Organisation	|actor
+// Contact details
+E74: Organisation	P76_has_contact_point (0 to n)	E41: Contact Point	|literal
+E41: Contact Point	tooltip	Contact information for the organisation; email address or telephone number.	literal-fs24|
+// Logo
+E74: Organisation	P138i_has_representation (0 to 1)	E36: Logo	|digital2
+E36: Logo	tooltip	A logo or other visual representation of the organisation.	digital2-fs24|
+// Citation text
+E74: Organisation	P67i_is_referred_to_by (0 to 1)	E33: Preferred Citation	|literal
+E33: Preferred Citation	tooltip	A prescribed citation string for referencing the organisation or project in publications (e.g., for funded projects with a required acknowledgement form).	literal-fs24|
+// Place association
+E74: Organisation	P74_has_current_or_former_residence (0 to n)	E53: Location (Place of Organisation)	|place
+// Description text
+E73: Description Text	tooltip	Free-text description of the organisation's purpose, scope, or history.	literal-fs24|
+E31: Organisation Documents	tooltip	Documents relating to the organisation (authority files, reports, charters).	document-fs24|

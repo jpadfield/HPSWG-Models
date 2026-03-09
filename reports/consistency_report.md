@@ -1,6 +1,6 @@
 # Model Consistency Report
 
-_Generated: 2026-03-09 16:56 UTC_
+_Generated: 2026-03-09 16:57 UTC_
 
 **Individual model files analysed:** 14  
 **Workflow/overview files analysed:** 1  
@@ -45,18 +45,18 @@ Multiple targets are comma-separated or joined with `or`.
 Each model's linked entities are listed with their declared target models and consistency status. Where no `//links` declaration exists, possible targets are suggested based on matching class codes.
 
 <details>
-<summary><strong>heritage_object/heritage_object_v1.5.tsv</strong> -- 2 confirmed, 1 to review, 7 undeclared</summary>
+<summary><strong>heritage_object/heritage_object_v1.5.tsv</strong> -- 7 confirmed, 1 to review, 2 undeclared</summary>
 
 | Linked entity | Class code | Declared target(s) | Status |
 | --- | --- | --- | --- |
 | `E39: Institution or Person` | `E39` | `person` → `E21: Person` | 🔵 Hierarchy match -- confirm intent |
 |  |  | `institution` | ❓ Target folder not found in repo |
 | `E53: Institution or Place` | `E53` | `location` → `E53: Location` | ✅ Consistent |
-| `E54: Dimensions` | `E54` | _No matching models found_ | ⚠ No declaration |
-| `E78: Collection (Curated Holding)` | `E78` | _No matching models found_ | ⚠ No declaration |
-| `E31: Report or Document` | `E31` | _No matching models found_ | ⚠ No declaration |
-| `E57: Medium` | `E57` | _No matching models found_ | ⚠ No declaration |
-| `E57: Other Material` | `E57` | _No matching models found_ | ⚠ No declaration |
+| `E54: Dimensions` | `E54` | `crm:E54` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
+| `E78: Collection (Curated Holding)` | `E78` | `crm:E78` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
+| `E31: Report or Document` | `E31` | `crm:E31` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
+| `E57: Medium` | `E57` | `crm:E57` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
+| `E57: Other Material` | `E57` | `crm:E57` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
 | `E22: Support` | `E22` | `heritage_object_part` | ⚠️ Class mismatch -- check required |
 | `E12: Production Event` | `E12` | `production_event` → `E12: Production` | ✅ Consistent |
 | `EX_Digital_Image: Main Object Image` | `EX_Digital_Image` | _No matching models found_ | ⚠ No declaration |

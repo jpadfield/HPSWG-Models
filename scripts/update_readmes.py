@@ -742,9 +742,10 @@ def write_reports_readme(raw_base: str):
     reports_dir = REPORTS_DIR
     template_path = reports_dir / "README.template.md"
 
-    report_files = sorted(
-        p for p in reports_dir.glob("*.md")
-        if p.name.lower() != "readme.md"
+    report_files = sorted( 
+        p for p in reports_dir.glob("*.md") 
+        if p.name.lower() not in 
+          {"readme.md", "readme.template.md"} 
     )
 
     def build_table() -> str:
@@ -757,8 +758,9 @@ def write_reports_readme(raw_base: str):
         for rp in report_files:
             desc = extract_report_description(rp)
             _, modified = get_git_dates(rp)
-            raw_link = f"{raw_base}/{rp.relative_to(REPO_ROOT).as_posix()}"
-            rows.append(f"| [{rp.name}]({raw_link}) | {desc} | {modified} |")
+            #raw_link = f"{raw_base}/{rp.relative_to(REPO_ROOT).as_posix()}"
+            #rows.append(f"| [{rp.name}]({raw_link}) | {desc} | {modified} |")
+            rows.append(f"| [{rp.name}]({rp.name}) | {desc} | {modified} |")
         return "\n".join(rows)
 
     reports_dir.mkdir(exist_ok=True)

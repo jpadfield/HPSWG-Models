@@ -133,7 +133,7 @@ def normalise_code(code: str) -> str:
 def parse_targets(raw: str) -> List[str]:
     """
     Parse the target side of a //links directive.
-    'person, institution' or 'person or institution' -> ['person', 'institution']
+    'person, organisation' or 'person or organisation' -> ['person', 'organisation']
     Ontology references (e.g. 'crm:E31', 'crmsci:S13') are preserved as-is.
     """
     raw = raw.strip()
@@ -489,7 +489,7 @@ def generate_report(result: Dict, files: List[ModelFile]) -> str:
         "",
         "**Repo model targets** -- point to another model folder in this repository:",
         "```",
-        "//links E39: Project Owner --> person, institution",
+        "//links E39: Project Owner --> person, organisation",
         "//links E7: Parent Project --> project",
         "```",
         "",

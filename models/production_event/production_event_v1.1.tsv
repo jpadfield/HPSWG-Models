@@ -1,0 +1,27 @@
+//flowchart LR
+E12: Production	tooltip	The activity that brought a physical heritage object into existence (workshop/manufacture making).	event-fs32|
+E12: Production	has note	Document Note: Production Model Overview
+Document Note: Production Model Overview	tooltip	This model captures the production event that resulted in the physical heritage object. It records who carried it out, where and when it occurred, how it is identified and described, and the documentary sources that explicitly evidence the event. The model links the production to the heritage object(s) produced and distinguishes descriptive notes from documentary evidence to support provenance and scholarly validation.
+//subgraph Linked Entities
+E22: Heritage Object	tooltip	The physical artwork produced by this event.	object-fs24|
+//links E22: Heritage Object --> heritage_object
+E39: Group or Artist	tooltip	The actor (artist, studio, workshop) who carried out the production.	actor-fs24|
+//links E39: Group or Artist --> person, organisation
+E53: Place of Production	tooltip	The place where the production activity occurred.	place-fs24|
+//link E53: Place of Production --> location
+E31: Production Documents	tooltip	Documents that explicitly evidence or discuss the production event (e.g., contracts, workshop records, technical reports, catalogues).	document-fs24|
+//links E31: Production Documents --> crm:E31
+//end sg1
+E12: Production	P48_has_preferred_identifier (1 to 1)	E42: Persistent Identifier (PID)	|url
+E42: Persistent Identifier (PID)	P2_has_type (1 to 1)	aat:300387580
+E12: Production	P1_is_identified_by (0 to 1)	E41: Unique System Label or ID	|name
+E41: Unique System Label or ID	tooltip	Required within some documentation or database systems, such as ResearchSpace required label.
+E12: Production	P67i_is_referred_to_by (1 to 1)	E73: Description Text	|literal
+E73: Description Text	P45i_is incorporated in (0 to n)	E31: Production Documents	|document
+E12: Production	P70i_is_documented_in (0 to n)	E31: Production Documents	|document
+E12: Production	P2_has_type (1 to n)	E55: production type	|type
+E55: production type	tooltip	One or more values from a controlled list (e.g., painted, printed, cast).
+E12: Production	P108_has_produced (1 to n)	E22: Heritage Object
+E12: Production	P14_carried_out_by (1 to n)	E39: Group or Artist	|actor
+E12: Production	P7_took_place_at (1 to 1)	E53: Place of Production	|place
+E12: Production	P4_has_time-span (1 to 1)	E52: Production date	|period

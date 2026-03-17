@@ -12,7 +12,7 @@ S24: Sample Splitting	tooltip	The event during which a new child sample was phys
 E53: Storage Location	tooltip	Optional direct link to the place where the sample is currently housed or permanently stored.	place-fs24|
 //links E53: Storage Location --> location
 E22: Storage Unit	tooltip	Optional definition of a particular drawer or storage cupboard, which in turn would be linked to a defined location.	object-fs24|
-//links E22: Storage Unit --> storage_unit
+//links E22: Storage Unit --> sample_storage_unit
 E39: Organisation or Person	tooltip	The legal owner of the sample.	actor-fs24|
 //links E39: Organisation or Person --> person, organisation [confirmed]
 E53: Organisation or Address	tooltip	The current location of the sample if different to its permanent location.	place-fs24|
@@ -22,7 +22,7 @@ E39: Organisation or Person#-1	tooltip	The organisation responsible for the care
 E31: Sample Documents	tooltip	Any document, note, report, or publication describing or relating to the sample.	document-fs24|
 //links E31: Sample Documents --> crm:E31
 E16: Measurement	tooltip	An event in which one or more quantitative properties of the sample were measured.	event-fs24|
-//links E16: Measurement --> crm:E31
+//links E16: Measurement --> crm:E16
 S27: Observation	tooltip	An event in which qualitative or visual properties of the sample were examined.	event-fs24|
 //links
 E11: Sample Modification	tooltip	An event that altered the sample after its initial removal, such as preparation, embedding, or coating.	event-fs24|

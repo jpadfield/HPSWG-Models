@@ -1,6 +1,6 @@
 # Model Consistency Report
 
-_Generated: 2026-03-17 11:33 UTC_
+_Generated: 2026-03-17 12:08 UTC_
 
 **Individual model files analysed:** 14  
 **Workflow/overview files analysed:** 1  
@@ -13,7 +13,7 @@ Each linked entity in a model's `//subgraph Linked Entities` block should have a
 
 **Repo model targets** -- point to another model folder in this repository:
 ```
-//links E39: Project Owner --> person, institution
+//links E39: Project Owner --> person, organisation
 //links E7: Parent Project --> project
 ```
 
@@ -45,12 +45,12 @@ Multiple targets are comma-separated or joined with `or`.
 Each model's linked entities are listed with their declared target models and consistency status. Where no `//links` declaration exists, possible targets are suggested based on matching class codes.
 
 <details>
-<summary><strong>heritage_object/heritage_object_v1.5.tsv</strong> -- 7 confirmed, 1 to review, 2 undeclared</summary>
+<summary><strong>heritage_object/heritage_object_v1.6.tsv</strong> -- 7 confirmed, 2 to review, 2 undeclared</summary>
 
 | Linked entity | Class code | Declared target(s) | Status |
 | --- | --- | --- | --- |
-| `E39: Institution or Person` | `E39` | `person` → `E21: Person` | 🔵 Hierarchy match -- confirm intent |
-|  |  | `institution` | ❓ Target folder not found in repo |
+| `E39: Organisation or Person` | `E39` | `person` → `E21: Person` | 🔵 Hierarchy match -- confirm intent |
+|  |  | `organisation` → `E74: Organisation` | 🔵 Hierarchy match -- confirm intent |
 | `E53: Institution or Place` | `E53` | `location` → `E53: Location` | ✅ Consistent |
 | `E54: Dimensions` | `E54` | `crm:E54` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
 | `E78: Collection (Curated Holding)` | `E78` | `crm:E78` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
@@ -98,14 +98,15 @@ Each model's linked entities are listed with their declared target models and co
 </details>
 
 <details>
-<summary><strong>production_event/production_event_v1.0.tsv</strong> -- 4 undeclared</summary>
+<summary><strong>production_event/production_event_v1.1.tsv</strong> -- 2 confirmed, 2 to review, 1 undeclared</summary>
 
 | Linked entity | Class code | Declared target(s) | Status |
 | --- | --- | --- | --- |
-| `E22: Painting` | `E22` | _Suggested: `heritage_object` (`E22: Heritage Object`), `sample_storage_unit` (`E22: Storage Unit`)_ | ⚠ No declaration |
-| `E39: Group or Artist` | `E39` | _No matching models found_ | ⚠ No declaration |
+| `E22: Heritage Object` | `E22` | `heritage_object` → `E22: Heritage Object` | ✅ Consistent |
+| `E39: Group or Artist` | `E39` | `person` → `E21: Person` | 🔵 Hierarchy match -- confirm intent |
+|  |  | `organisation` → `E74: Organisation` | 🔵 Hierarchy match -- confirm intent |
 | `E53: Place of Production` | `E53` | _Suggested: `location` (`E53: Location`)_ | ⚠ No declaration |
-| `E31: Production Documents` | `E31` | _No matching models found_ | ⚠ No declaration |
+| `E31: Production Documents` | `E31` | `crm:E31` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
 
 </details>
 

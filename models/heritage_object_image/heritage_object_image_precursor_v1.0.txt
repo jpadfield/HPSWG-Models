@@ -1,0 +1,2 @@
+PAINTING IMAGE
+Field Name	Description and purpose of Field	Mapping to RS interface (tbc by Kartography)	Notes from Kartography

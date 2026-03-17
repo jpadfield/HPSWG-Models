@@ -1,0 +1,30 @@
+SAMPLE PREPARATION EVENT
+Field Name	Description and purpose of Field	Mapping to RS interface (tbc by Kartography)	Notes from Kartography
+Painting identifier
+Type of sample preparation	cross section, unmounted, dispersion
+Date of paint sample cross section preparation	(format: YYYY/MM/DD)
+Forename of person carrying out cross section preparation
+Surname of person carrying out cross section preparation
+Institutional affiliation of person carrying out cross section preparation
+Sample cross section preparation protocol (Add the protocol details also in the "Protocols" form)	recorded in a form (exists but needs reviewing and standardisation)
+location of storage of cross sections	usually an institution
+Date of paint sample dispersion preparation	(format: YYYY/MM/DD)
+Forename of person carrying out dispersion preparation
+Surname of person carrying out dispersion preparation
+Sample dispersion protocol and method	e.g., DPX
+Institutional affiliation of person carrying out dispersion preparation
+location of storage of dispersions	usually an institution
+Date of preparation of unmounted samples
+Forename of person carrying out preparation of unmounted samples
+Surname of person carrying out preparation of unmounted samples
+protocol and method for preparation of unmounted samples
+Institutional affiliation of person carrying out preparation of unmounted samples
+location of storage of unmounted samples	usually an institution
+Other sample preparation	Use if more events produced additional aspects of the sample: as soon as you start doing things to the sample it becomes more than one thing
+Date of preparation
+Forename of person carrying out preparation
+Surname of person carrying out preparation
+protocol and method for preparation
+Institutional affiliation of person carrying out preparation
+location of storage	usually an institution
+comment for sample preparation

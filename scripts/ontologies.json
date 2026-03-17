@@ -1,0 +1,38 @@
+[
+  {
+    "name": "CIDOC CRM",
+    "version": "7.1.3",
+    "prefix": "crm",
+    "namespace": "http://www.cidoc-crm.org/cidoc-crm/",
+    "docs": "https://cidoc-crm.org/html/cidoc_crm_v7.1.3.html",
+    "download": "https://cidoc-crm.org/rdfs/7.1.3/CIDOC_CRM_v7.1.3.rdfs",
+    "notes": "Core ontology. All models in this repository are aligned to this version."
+  },
+  {
+    "name": "CRMdig",
+    "version": "4.0",
+    "prefix": "crmdig",
+    "namespace": "http://www.ics.forth.gr/isl/CRMdig/",
+    "docs": "https://cidoc-crm.org/extensions/crmdig/html/CRMdig_v4.0.html",
+    "download": "https://cidoc-crm.org/crmdig/ModelVersion/version-4.0",
+    "notes": "Extension for digital provenance and technical metadata. Adjusted for compatibility with CIDOC CRM 7.1.3."
+  },
+  {
+    "name": "CRMsci",
+    "version": "3.0",
+    "prefix": "crmsci",
+    "namespace": "http://www.ics.forth.gr/isl/CRMsci/",
+    "docs": "https://cidoc-crm.org/crmsci/ModelVersion/crmsci-3.0",
+    "download": "https://cidoc-crm.org/crmsci/ModelVersion/crmsci-3.0",
+    "notes": "Extension for scientific observation and measurement. Adjusted for compatibility with CIDOC CRM 7.1.3."
+  },
+  {
+    "name": "ResearchSpace",
+    "version": null,
+    "prefix": "EX",
+    "namespace": "https://www.researchspace.org/resource/system/",
+    "docs": "https://github.com/researchspace/researchspace",
+    "download": null,
+    "notes": "Platform-specific classes and properties used within the ResearchSpace deployment at the National Gallery. CRM-aligned alternatives are planned for future inclusion alongside these terms."
+  }
+]

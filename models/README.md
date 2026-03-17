@@ -1,57 +1,60 @@
-# Models
+# HPSWG Models
 
-This folder contains all model definitions used in this project.  
-Models are expressed as simple TSV triple structures and are designed for use with the
-**National Gallery Dynamic Modeller**.
+This folder contains the semantic data models developed by the Heritage and Paintings Science Working Group (HPSWG) at the National Gallery, London. Models are expressed as tab-separated triple files (TSV) aligned to CIDOC CRM and related extension ontologies, and are designed for use with the [National Gallery Dynamic Modeller](https://research.nationalgallery.org.uk/lab/modelling/).
 
-These models support CIDOC CRM v7.1.3-aligned documentation of:
+## How this folder is organised
 
-- Paintings and their components
-- Heritage samples and analytical context
-- Conservation, technical imaging, and material relationships
-- Higher-level NG-wide relationships
+Each subfolder represents either a workflow overview or a domain model:
 
-Each model is maintained in its own subfolder and may contain multiple versioned TSV files.
-Version history and detail is documented in the individual model README pages.
+- **Semantic workflow overviews** -- CIDOC CRM-aligned files showing inter-model connectivity. These serve as the canonical reference for shared node labels and are used by the automated consistency checker.
+- **User workflow overviews** -- simplified overviews designed to help stakeholders agree on top-level connections before full semantic modelling begins. Not part of the consistency check.
+- **Domain models** (`.tsv` files) -- fully mapped CIDOC CRM triples for a specific aspect of heritage science documentation, ready for visualisation in the Dynamic Modeller.
+- **Precursor files** (`.txt` files) -- field mapping tables and draft notes representing domain models in early development.
+- **Planned folders** -- reserved for future work, currently empty.
 
----
+## Ontologies in use
 
-## Folder Structure
+<!-- BEGIN AUTO: ONTOLOGY-REF -->
+See [`ONTOLOGIES.md`](../ONTOLOGIES.md) for full version details, source links, and compatibility notes. Ontologies currently in use:
 
-models/
-ng_models_vX.Y.tsv
-<model_name>/
-<model_name>_vA.B.tsv
-README.md
+| Ontology | Version | Prefix |
+|----------|---------|--------|
+| [CIDOC CRM](https://cidoc-crm.org/html/cidoc_crm_v7.1.3.html) | 7.1.3 | `crm` |
+| [CRMdig](https://cidoc-crm.org/extensions/crmdig/html/CRMdig_v4.0.html) | 4.0 | `crmdig` |
+| [CRMsci](https://cidoc-crm.org/crmsci/ModelVersion/crmsci-3.0) | 3.0 | `crmsci` |
+| [ResearchSpace](https://github.com/researchspace/researchspace) | _see notes_ | `EX` |
+<!-- END AUTO: ONTOLOGY-REF -->
 
----
-
-## Available Model Folders
+## Model index
 
 <!-- BEGIN AUTO: MODEL-FOLDERS -->
-### NG-wide model versions
-
-| Version | Raw TSV | Visualisation |
-|---------|---------|---------------|
-| 0.1 | [TSV](https://raw.githubusercontent.com/RICHeS-UKRI/HSDS-NG-Models/refs/heads/main/models/ng_models_v0.1.tsv) | [Open in Modeller](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/RICHeS-UKRI/HSDS-NG-Models/refs/heads/main/models/ng_models_v0.1.tsv) |
-
-### Model folders
-
-- [`samples/`](./samples)
+_Model folder index will be generated here._
 <!-- END AUTO: MODEL-FOLDERS -->
 
----
+## Additional information
 
-## Creating or Updating a Model
+### Folder structure
+
+```
+models/
+  workflows/              # Semantic workflow overviews (canonical reference)
+  user_workflows/         # User-facing simplified overviews
+  <model_name>/           # Domain model folders
+    <model_name>_vA.B.tsv
+    README.md
+```
+
+### Creating or updating a model
 
 1. Add a new folder inside `models/`.
 2. Add a TSV file using the pattern `<model>_v0.1.tsv`.
 3. Commit and push; the GitHub Action will:
-   - Create or update that model’s README  
-   - Update the top-level README  
+   - Create or update that model's README
+   - Update the top-level README
    - Integrate the model into the master list
+   - Run the consistency checker and update `reports/consistency_report.md`
+4. A TXT file using the pattern `<model>_notes.txt` can be added to record initial thoughts on a model before it has been fully formed.
 
 ---
 
-If you would like help constructing new models or integrating them with CIDOC CRM, please open an
-issue or contact the maintainers.
+If you would like help constructing new models or integrating them with CIDOC CRM, please open an issue or contact the maintainers.

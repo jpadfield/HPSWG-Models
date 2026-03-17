@@ -1,0 +1,63 @@
+//flowchart LR
+E21: Person	tooltip	An individual (historic or modern) acting in research, conservation, authorship, etc.	actor-fs32|
+E21: Person	has note	Document Note: Person Model Overview
+Document Note: Person Model Overview	tooltip	This model identifies a person with PIDs, labels, and descriptions; records name parts and honorifics, external identifiers and web presence, research disciplines, life dates, affiliations, and optional contact details and residence.
+//subgraph Linked Entities
+E74: Organisation (Affiliation)	tooltip	An organisation or group the person is/was affiliated with or a member of.	actor-fs24|
+//links E74: Organisation (Affiliation) --> organisation
+E53: Place (Residence)	tooltip	A place where the person lives/lived.	place-fs24|
+//links E53: Place (Residence) --> location
+E31: Person Documents	tooltip	Documents that discuss or evidence the person (CVs, bios, authority files).	document-fs24|
+//links E31: Person Documents --> crm:E31
+//end sg1
+// Identification & description
+E21: Person	P48_has_preferred_identifier (1 to 1)	E42: Persistent Identifier (PID)	|url
+E21: Person	P1_is_identified_by (0 to 1)	E41: Unique System Label or ID	|name
+E41: Unique System Label or ID	tooltip	Required within some documentation or database systems, such as ResearchSpace required label.
+
+// Description text
+E21: Person	P67i_is_referred_to_by (0 to n)	E73: Description Text	|literal
+E73: Description Text	P45i_is incorporated in (0 to n)	E31: Person Documents	|document
+E21: Person	P70i_is_documented_in (0 to n)	E31: Person Documents	|document
+E73: Description Text	tooltip	Free-text biographical or role description.
+E31: Person Documents	tooltip	Documents that discuss or evidence the person (CVs, bios, authority files).
+
+// Names (as appellations typed by function)
+E21: Person	P1_is_identified_by (0 to 1)	E41: Given Name	|name
+E21: Person	P1_is_identified_by (0 to 1)	E41: Family Name	|name
+E21: Person	P1_is_identified_by (0 to 1)	E41: Honorific / Title	|name
+E21: Person	P1_is_identified_by (0 to n)	E41: Alternative Name	|name
+
+E41: Given Name	tooltip	The person's given/first name as an appellation.
+E41: Family Name	tooltip	The person's family/last name as an appellation.
+E41: Honorific / Title	tooltip	Honorifics or titles (e.g., Dr, Prof, Sir).
+E41: Alternative Name	tooltip	Any other name the person is known by, including former names.
+
+// External identifiers & web presence
+E21: Person	P1_is_identified_by (0 to n)	E42: External Identifier	|url
+E21: Person	P1_is_identified_by (0 to n)	E42: Website	|url
+E42: Persistent Identifier (PID)	tooltip	A globally resolvable identifier for the person (e.g., Wikidata QID, ISNI).	url-fs24|
+E42: External Identifier	tooltip	Additional identifiers from authority sources, use controlled terms e.g.: ORCID, VIAF, ISNI, Wikidata, ResearchGate, Google Scholar.	url-fs24|
+E42: Website	tooltip	A personal or institutional profile page URL (e.g., university staff page, ResearchGate, Academia.edu).	url-fs24|
+
+// Life events
+E21: Person	P98i_was_born (0 to 1)	E67: Birth	|event
+E67: Birth	P4_has_time-span (0 to 1)	E52: Birth Date	|period
+E21: Person	P100i_died_in (0 to 1)	E69: Death	|event
+E69: Death	P4_has_time-span (0 to 1)	E52: Death Date	|period
+E67: Birth	tooltip	The person's birth event.	event-fs24|
+E69: Death	tooltip	The person's death event (if applicable).	event-fs24|
+E52: Birth Date	tooltip	Time-span for birth.	period-fs24|
+E52: Death Date	tooltip	Time-span for death.	period-fs24|
+// Affiliation & contact
+E21: Person	P107i_is_current_or_former_member_of (0 to n)	E74: Organisation (Affiliation)	|actor
+E21: Person	P76_has_contact_point (0 to n)	E41: Contact Point	|literal
+E41: Contact Point	tooltip	Contact information for the person; email address or telephone number.
+// Residence
+E21: Person	P74_has_current_or_former_residence (0 to n)	E53: Place (Residence)	|place
+
+
+// Research disciplines
+E21: Person	P14i_performed (0 to n)	E7: Area of Work	|event_bn
+E7: Area of Work	tooltip	This 'area of work' can be a simple or complex event, it purpose here is to provide a mechanism to record simple specialities of research discipline as person has experience in or is known for. For professional field(s) or domain(s) of practice, use controlled terms e.g.: paintings conservation, heritage science, analytical chemistry.
+E7: Area of Work	P2_has_type (1 to n)	E55: Research Discipline	|type

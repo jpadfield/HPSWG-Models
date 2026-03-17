@@ -1,0 +1,3 @@
+SIMPLE DESCRIPTIVE DOCUMENT
+Simple Descriptive Document/semantic narrative<br/><br/>Many "things" in this case samples, paintings, images, etc will have more than one description - or even mutiple examples of the same type of description written at different times and or by different people - potentially for different reasons.<br/><br/>It would be good to have a steer as to how this should be managed.
+Field Name	Description and purpose of Field	Mapping to RS interface (tbc by Kartography)	Notes from Kartography

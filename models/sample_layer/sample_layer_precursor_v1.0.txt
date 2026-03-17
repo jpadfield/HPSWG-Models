@@ -1,0 +1,3 @@
+SAMPLE LAYER
+This would be a generic form to allow the identification of any layer in the sample from the dirt down to the ground. This form could be directly mirrored the painting layer form as well. We will need to discussion the issue of numbering or ids for layers. <br/> <br/> The connection between layers in the painting as a whole and layers in a specific sample will need to be considered.<br/> <br/> These will need a name, id, order, relationship to parent (painting/sample), types/classes and optional description. Links would then be needed to describe sub compnents and or identidified materials.
+Field Name	Description and purpose of Field	Mapping to RS interface (tbc by Kartography)	Notes from Kartography

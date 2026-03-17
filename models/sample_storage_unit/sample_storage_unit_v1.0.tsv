@@ -1,0 +1,29 @@
+//flowchart LR
+// ===================== SAMPLE STORAGE =====================
+E22: Storage Unit	tooltip	A physical storage unit or container for samples (e.g., slide, capsule, box, drawer, cabinet).	object-fs32|
+E22: Storage Unit	has note	Document Note: Sample Storage Model Overview
+Document Note: Sample Storage Model Overview	tooltip	This model describes a physical storage unit for heritage samples, including identifiers, human-readable labels, descriptive notes, storage type and status, references to relevant storage methods/protocols, its current keeper, and its location within a wider place hierarchy.
+//subgraph Linked Entities
+E39: Storage Keeper	tooltip	The institution or person currently responsible for the care or custody of this storage unit.	actor-fs24|
+E53: Storage Location (Place)	tooltip	The place where the storage unit is located (e.g., room, store, facility).	place-fs24|
+E31: Storage Documents	tooltip	Documents describing storage practice, handling, or even catalogues or logs.	document-fs24|
+E29: Storage Method / Protocol	tooltip	A defined method or protocol applicable to storage or handling of samples.	document-fs24|
+//end sg1
+E22: Storage Unit	P48_has_preferred_identifier (1 to 1)	E42: Persistent Identifier (PID)	|url
+E42: Persistent Identifier (PID)	P2_has_type (1 to 1)	aat:300387580
+E22: Storage Unit	P1_is_identified_by (1 to 1)	E41: Unique System Label	|name
+E41: Unique System Label	tooltip	ResearchSpace required label.
+E22: Storage Unit	P67i_is_referred_to_by (0 to n)	E73: Description Text	|literal
+E73: Description Text	P45i_is incorporated in (0 to n)	E31: Storage Documents	|document
+E22: Storage Unit	P2_has_type (1 to n)	E55: storage type	|type
+E22: Storage Unit	P2_has_type (0 to 1)	E55: storage status	|type
+E22: Storage Unit	P44_has_condition (0 to 1)	E3: storage condition state	|type
+E55: storage type	tooltip	Controlled type/category (e.g., slide, tray, box, drawer, cabinet).	type-fs24|
+E55: storage status	tooltip	Operational status (e.g., in service, decommissioned, quarantined, damaged).	type-fs24|
+E3: storage condition state	tooltip	The current condition state of the storage unit (e.g., good, fair, poor).	type-fs24|
+E22: Storage Unit	P67i_is_referred_to_by (0 to n)	E29: Storage Method / Protocol	|document
+E29: Storage Method / Protocol	tooltip	Link a procedure or SOP; if also published as a document, connect that record under Storage Documents.
+E22: Storage Unit	P50_has_current_keeper (1 to 1)	E39: Storage Keeper	|actor
+E22: Storage Unit	P53_has_former_or_current_location (1 to 1)	E53: Storage Location (Place)	|place
+// Optional: storage hierarchy (drawer in cabinet in room)
+E22: Storage Unit	P46i_forms_part_of (0 to 1)	E22: Storage Unit	|object

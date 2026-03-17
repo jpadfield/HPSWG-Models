@@ -1,0 +1,11 @@
+PAINTING LAYER
+Not yet released to Kartography<br/> <br/> This would be a generic form to allow the identification of any layer in the painting from the dirt down to the ground. This form could be directly mirrored or used to describe Sample Layers as well. We will need to discuss the issue of numbering or ids for layers. These will need a name, id, order, relationship to parent (painting/sample), types/classes and optional description. Links would then be needed to describe sub compnents and or identified materials.<br/> <br/> This will be a nested form within the painting part.
+Field Name	Description and purpose of Field	Mapping to RS interface (tbc by Kartography)	Notes from Kartography
+Painting	Reference to the painting that has this painting layer
+Paint part	Reference to the painting part that has this painting layer
+Paint layer ID	Unique number
+Paint layer label	Automatically generated based on…?
+Paint layer name	E.g. 'Paint layer 1'
+Paint layer type	Controlled list?
+Paint layer relative location	Not sure how this would work. This doesn't need to be modelled yet.
+Painting layer description	Optional

@@ -1,6 +1,6 @@
 # Model Consistency Report
 
-_Generated: 2026-03-18 16:51 UTC_
+_Generated: 2026-03-18 16:52 UTC_
 
 **Individual model files analysed:** 15  
 **Workflow/overview files analysed:** 1  
@@ -231,7 +231,7 @@ Each model's linked entities are listed with their declared target models and co
 </details>
 
 <details>
-<summary><strong>sample_taking_event/sample_taking_event_v1.6.tsv</strong> -- 7 confirmed, 1 undeclared</summary>
+<summary><strong>sample_taking_event/sample_taking_event_v1.6.tsv</strong> -- 8 confirmed</summary>
 
 | Linked entity | Class code | Declared target(s) | Status |
 | --- | --- | --- | --- |
@@ -242,7 +242,7 @@ Each model's linked entities are listed with their declared target models and co
 | `E39: Organisation or Person` | `E39` | `person` → `E21: Person` | ✅ Consistent (confirmed hierarchy match) |
 |  |  | `organisation` → `E74: Organisation` | ✅ Consistent (confirmed hierarchy match) |
 | `E53: Sampling Location` | `E53` | `location` → `E53: Location` | ✅ Consistent |
-| `E26: Sample Site` | `E26` | _Suggested: `sample_site` (`E26: Sample Site`)_ | ⚠ No declaration |
+| `E26: Sample Site` | `E26` | `sample_site` → `E26: Sample Site` | ✅ Consistent |
 
 </details>
 

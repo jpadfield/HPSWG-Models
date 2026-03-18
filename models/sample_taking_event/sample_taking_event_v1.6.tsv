@@ -22,7 +22,7 @@ E39: Organisation or Person	tooltip	The actor (individual or organisation) respo
 E53: Sampling Location	tooltip	The physical place where the sampling event occurred, typically within an organisation or laboratory.	place-fs24|
 //links E53: Sampling Location --> location
 E26: Sample Site	tooltip	The specific point or small area on the painting where the sample was taken.	place-fs24|
-//link E26: Sample Site --> sample_site
+//links E26: Sample Site --> sample_site
 //end sg1
 
 ///SAMPLE TAKING //////////////////////////////////////////////////////////////////////////////////////////////////

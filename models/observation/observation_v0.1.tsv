@@ -1,0 +1,80 @@
+//flowchart LR
+S27: Observation	tooltip	A scientific or technical examination of a physical thing in which one or more properties are investigated to gain knowledge. Covers the full range of scientific examination from visual inspection through to instrumental analysis. May produce simple recorded findings, complex data outputs, or images. S27 is the superclass of S21: Measurement (E16); quantitative measurement events should use the dedicated Measurement model.	event-fs32|
+S27: Observation	has note	Document Note: Observation Model Overview
+Document Note: Observation Model Overview	tooltip	This model records a scientific or technical examination event. It captures identification, description, event typing, responsible actors, time and place, the entity observed, the property type examined, methods and protocols followed, equipment employed, and the outputs produced. Outputs may include images (EX_Digital_Image), digital data objects such as spectra or datasets (D1: Digital Object), and documentary records (E73: Observation Record). Interpretation of results and knowledge creation derived from outputs are out of scope here.
+
+//subgraph Linked Entities
+//subgraph E22/S13: Heritage Sample
+E22: Physical Sample	tooltip	A curated physical artefact that contains or carries the sampled matter (S13). Serves as the object-management layer: it holds identifiers, condition records, custody, storage, and images. P46 is used as a pragmatic contains/carries proxy for collection management purposes.	object_bn-fs24|
+S13: Material Sample	tooltip	The removed matter treated as an amount of matter (CRMsci S13) whose identity is grounded in material continuity and representativity. Serves as the scientific layer: it is the subject of measurement, observation, modification, and splitting events.	object_bn-fs24|
+//end sg2-10-10
+//links E22/S13: Heritage Sample --> sample
+E39: Institution or Person	tooltip	The actor (individual or organisation) responsible for carrying out or authorising the observation.	actor-fs24|
+//links E39: Institution or Person --> person, organisation [confirmed]
+E53: Place of Observation	tooltip	The place where the observation occurred (e.g., laboratory, examination room, imaging suite).	place-fs24|
+//links E53: Place of Observation --> location
+E31: Report or Document	tooltip	Documents that describe or evidence the observation (e.g., examination reports, condition reports, analytical notes).	document-fs24|
+//links E31: Report or Document --> crm:E31
+E29: Method / Protocol	tooltip	A defined method or protocol followed during the observation (e.g., a standard examination procedure or analytical protocol).	document-fs24|
+//links E29: Method / Protocol --> crm:E29
+E70: Instrument / Equipment	tooltip	Specific instruments or equipment used to carry out the observation (e.g., microscope, spectrometer, camera rig, SEM).	object-fs24|
+//links E70: Instrument / Equipment --> crm:E70
+//end sg1
+
+// Identification & description
+S27: Observation	P48_has_preferred_identifier (1 to 1)	E42: Persistent Identifier (PID)	|url
+E42: Persistent Identifier (PID)	P2_has_type (1 to 1)	aat:300387580
+S27: Observation	P1_is_identified_by (1 to 1)	E41: Unique System Label or ID	|name
+E41: Unique System Label or ID	tooltip	Required within some documentation or database systems, such as ResearchSpace required label.
+E41: Unique System Label or ID	has note	Automatic: Preferred TBC
+S27: Observation	P67i_is_referred_to_by (0 to n)	E73: Description Text	|literal
+E73: Description Text	P45i_is_incorporated_in (0 to n)	E31: Report or Document
+
+// Typing	evidence	and protocol
+S27: Observation	P2_has_type (1 to n)	E55: observation type	|type
+E55: observation type	tooltip	A controlled type/category for the observation (e.g., visual examination, optical microscopy, X-ray fluorescence, infrared reflectography, UV fluorescence, SEM-EDX, Raman spectroscopy).
+S27: Observation	P70i_is_documented_in (0 to n)	E31: Report or Document
+S27: Observation	P33_used_specific_technique (0 to n)	E29: Method / Protocol
+S27: Observation	P32_used_general_technique (0 to n)	E55: technique	|type
+E55: technique	tooltip	High-level technique categories (e.g., spectroscopy, imaging, microscopy, visual examination, diffraction).
+
+// Core event relations
+S27: Observation	O35_observed_entity (1 to 1)	E22/S13: Heritage Sample
+S27: Observation	O36_observed_property_type (0 to n)	E55: observed property type	|type
+E55: observed property type	tooltip	The type of property being investigated (e.g., colour, fluorescence response, surface morphology, elemental composition, layer structure, molecular composition).
+S27: Observation	P14_carried_out_by (1 to n)	E39: Institution or Person
+S27: Observation	P7_took_place_at (0 to 1)	E53: Place of Observation
+S27: Observation	P4_has_time-span (0 to 1)	E52: Observation Date	|period
+E52: Observation Date	tooltip	The timespan during which the observation occurred.
+
+// Equipment (optional but recommended)
+S27: Observation	P16_used_specific_object (0 to n)	E70: Instrument / Equipment
+S27: Observation	P125_used_object_of_type (0 to n)	E55: instrument/equipment type	|type
+E55: instrument/equipment type	tooltip	Type/category of instrument or equipment (e.g., optical microscope, SEM, XRF spectrometer, FTIR spectrometer, multispectral camera, X-ray tube).
+
+// Outputs
+// Images produced during the observation -- typed and usable in ResearchSpace image presentation
+S27: Observation	P94_has_created (0 to n)	EX_Digital_Image: Observation Image	|digital2
+EX_Digital_Image: Observation Image	tooltip	A digital image produced as a direct output of the observation event (e.g., microscope image, X-ray image, multispectral image, UV photograph).
+EX_Digital_Image: Observation Image	P2_has_type (1 to 1)	E55: image type	|type
+E55: image type	tooltip	The type of image produced (e.g., optical microscopy, SEM secondary electron, UV fluorescence, X-radiograph, infrared reflectogram).
+
+// Digital data objects -- spectra	datasets	maps	and other non-image analytical outputs (CRMdig D1)
+S27: Observation	P94_has_created (0 to n)	D1: Digital Object	|digital2
+D1: Digital Object	tooltip	A digital data output produced by the observation event other than an image, such as a spectrum, elemental map, diffractogram, or dataset.
+D1: Digital Object	P2_has_type (1 to 1)	E55: data output type	|type
+E55: data output type	tooltip	The type of data output produced (e.g., XRF spectrum, Raman spectrum, EDS map, FTIR spectrum, XRD pattern, numerical dataset).
+
+// Documentary record -- examination notes	analytical summaries	condition observations
+S27: Observation	P94_has_created (0 to n)	E73: Observation Record	|document
+E73: Observation Record	tooltip	A textual or structured documentary record produced by the observation event, such as examination notes, an analytical summary, or a condition observation report.
+E73: Observation Record	P70i_is_documented_in (0 to n)	E31: Report or Document
+
+// Dual-layer internal connection
+E22: Physical Sample	P46_is_composed_of (1 to n)	S13: Material Sample	|object
+S13: Material Sample	P46i_forms_part_of (1 to 1)	E22: Physical Sample
+
+// Note: S27: Observation is the superclass of S21: Measurement (E16: Measurement). Where quantitative
+// property values are recorded use the dedicated Measurement model in addition to or instead of this model.
+// Note: if the observation involves any material alteration of the sample, record a concurrent
+// E11: Sample Modification event.

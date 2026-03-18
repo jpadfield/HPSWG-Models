@@ -1,0 +1,76 @@
+//flowchart LR
+E11: Sample Modification	tooltip	An activity that altered a physical thing without bringing a new object into existence (e.g., embedding, polishing, coating, retouching).	event-fs32|
+E11: Sample Modification	has note	Document Note: Modification Model Overview
+Document Note: Modification Model Overview	tooltip	This model records an alteration event affecting a physical thing (sample or painting). It captures identification, description, event typing, responsible actors, time and place, the thing modified, methods/protocols followed, materials used, tools/equipment employed, and the documentary evidence supporting the event.
+
+//subgraph Linked Entities
+//subgraph E22/S13: Heritage Sample
+E22: Physical Sample	tooltip	A curated physical artefact that contains or carries the sampled matter (S13). Serves as the object-management layer: it holds identifiers, condition records, custody, storage, and images. P46 is used as a pragmatic contains/carries proxy for collection management purposes.	object_bn-fs24|
+//links E22: Heritage Sample --> sample
+S13: Material Sample	tooltip	The removed matter treated as an amount of matter (CRMsci S13) whose identity is grounded in material continuity and representativity. Serves as the scientific layer: it is the subject of measurement, observation, modification, and splitting events.	object_bn-fs24|
+//links S13: Material Sample --> sample
+//end sg2-10-10
+//links E22/S13: Heritage Sample --> sample
+E39: Institution or Person	tooltip	The actor (individual or organisation) responsible for carrying out or authorising the modification activity.	actor-fs24|
+//links E39: Institution or Person --> person, organisation [confirmed]
+E53: Place of Modification	tooltip	The place where the modification activity occurred (e.g., lab, studio).	place-fs24|
+//links E53: Place of Modification --> location
+E31: Report or Document	tooltip	Documents that describe or evidence the modification (e.g., treatment notes, SOPs, reports).	document-fs24|
+//links E31: Report or Document --> crm:E31
+E29: Method / Protocol	tooltip	A defined method or protocol followed during the modification.	document-fs24|
+//links E29: Method / Protocol --> crm:E29
+E57: Material Used	tooltip	Materials consumed or applied in the modification (e.g., resin, polish, varnish).	object-fs24|
+//links E57: Material Used --> crm:E57
+E70: Tool / Equipment	tooltip	Specific tools or equipment used during the modification.	object-fs24|
+//links E70: Tool / Equipment --> crm:E70
+//end sg1
+
+// Identification & description
+E11: Sample Modification	P48_has_preferred_identifier (1 to 1)	E42: Persistent Identifier (PID)	|url
+E42: Persistent Identifier (PID)	P2_has_type (1 to 1)	aat:300387580
+E11: Sample Modification	P1_is_identified_by (1 to 1)	E41: Unique System Label or ID	|name
+E41: Unique System Label or ID	tooltip	Required within some documentation or database systems, such as ResearchSpace required label.
+E41: Unique System Label or ID	has note	Automatic: Preferred TBC
+E11: Sample Modification	P67i_is_referred_to_by (0 to n)	E73: Description Text	|literal
+E73: Description Text	P45i_is_incorporated_in (0 to n)	E31: Report or Document
+
+// Typing	evidence	and protocol
+E11: Sample Modification	P2_has_type (1 to n)	E55: modification type	|type
+E55: modification type	tooltip	A controlled type/category for the modification (e.g., embedding, polishing, coating, retouching).
+E11: Sample Modification	P70i_is_documented_in (0 to n)	E31: Report or Document
+E11: Sample Modification	P33_used_specific_technique (0 to n)	E29: Method / Protocol
+E11: Sample Modification	P32_used_general_technique (0 to n)	E55: technique	|type
+E55: technique	tooltip	High-level technique categories (e.g., grinding, polishing, coating).
+
+// Core event relations
+E11: Sample Modification	P31_has_modified (1 to 1)	E22/S13: Heritage Sample
+E11: Sample Modification	P14_carried_out_by (1 to n)	E39: Institution or Person
+E11: Sample Modification	P7_took_place_at (1 to 1)	E53: Place of Modification
+E11: Sample Modification	P4_has_time-span (1 to 1)	E52: Modification Date	|period
+E52: Modification Date	tooltip	The timespan during which the modification occurred.
+
+// Materials and tools (optional but recommended)
+E11: Sample Modification	P126_employed (0 to n)	E57: Material Used
+E11: Sample Modification	P16_used_specific_object (0 to n)	E70: Tool / Equipment
+E11: Sample Modification	P125_used_object_of_type (0 to n)	E55: tool/equipment type	|type
+E55: tool/equipment type	tooltip	Type/category of tool or equipment (e.g., microtome, polisher, sputter coater).
+
+// Resulting state (recommended)
+E11: Sample Modification	P141_assigned (0 to n)	E13: Attribute Assignment	|event
+E13: Attribute Assignment	P140_assigned_attribute_to	E22/S13: Heritage Sample
+E13: Attribute Assignment	P177_assigned_property_type	E55: sample attribute format	|type
+E13: Attribute Assignment	P141_assigned (0 to 1)	E55: sample format	|type
+
+// Status as Condition State (recommended)
+E11: Sample Modification	P141_assigned (0 to n)	E13: Attribute Assignment#-1	|event
+E13: Attribute Assignment#-1	P140_assigned_attribute_to	E22/S13: Heritage Sample
+E13: Attribute Assignment#-1	P177_assigned_property_type	E55: sample attribute status	|type
+E13: Attribute Assignment#-1	P141_assigned (0 to 1)	E3: Condition State	|period
+E3: Condition State	P2_has_type (1 to n)	E55: sample status	|type
+
+// Dual-layer internal connection
+E22: Physical Sample	P46_is_composed_of (1 to n)	S13: Material Sample	|object
+S13: Material Sample	P46i_forms_part_of (1 to 1)	E22: Physical Sample
+
+// Note: destruction of a sample and creation of sub-samples as a result of modification are out of scope here.
+// Where a modification results in splitting, use the Sample Splitting model (S24) in addition to this model.

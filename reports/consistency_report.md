@@ -1,6 +1,6 @@
 # Model Consistency Report
 
-_Generated: 2026-03-19 14:14 UTC_
+_Generated: 2026-03-19 16:28 UTC_
 
 **Individual model files analysed:** 16  
 **Workflow/overview files analysed:** 1  
@@ -138,7 +138,7 @@ Each model's linked entities are listed with their declared target models and co
 </details>
 
 <details>
-<summary><strong>project/project_v1.1.tsv</strong> -- 6 confirmed</summary>
+<summary><strong>project/project_v1.2.tsv</strong> -- 6 confirmed</summary>
 
 | Linked entity | Class code | Declared target(s) | Status |
 | --- | --- | --- | --- |

@@ -48,9 +48,9 @@ WORKFLOW_FOLDERS = {"workflows"}
 
 VERSION_RE = re.compile(r"_v(\d+(?:\.\d+)*)\.tsv$")
 SKIP_RE = re.compile(r"^\s*//")
-SUBGRAPH_START_RE = re.compile(r"^\s*//subgraph\s+Linked Entities", re.IGNORECASE)
-SUBGRAPH_ANY_START_RE = re.compile(r"^\s*//subgraph\b", re.IGNORECASE)
-SUBGRAPH_NAME_RE = re.compile(r"^\s*//subgraph\s+(.+)", re.IGNORECASE)
+SUBGRAPH_START_RE = re.compile(r"^\s*//subgraph(?:-(?:TB|TD|BT|RL|LR))?\s+Linked Entities", re.IGNORECASE)
+SUBGRAPH_ANY_START_RE = re.compile(r"^\s*//subgraph(?:-(?:TB|TD|BT|RL|LR))?\b", re.IGNORECASE)
+SUBGRAPH_NAME_RE = re.compile(r"^\s*//subgraph(?:-(?:TB|TD|BT|RL|LR))?\s+(.+)", re.IGNORECASE)
 SUBGRAPH_END_RE = re.compile(r"^\s*//end", re.IGNORECASE)
 LINKS_RE = re.compile(
     r"^\s*//links\s+(.+?)\s*-->\s*(.+?)\s*(\[confirmed\])?\s*$", re.IGNORECASE

@@ -37,6 +37,7 @@ from typing import Dict, List, Optional, Tuple
 REPO_ROOT = Path(__file__).resolve().parents[1]
 MODELS_DIR = REPO_ROOT / "models"
 REPORTS_DIR = REPO_ROOT / "reports"
+FORMS_DIR = REPO_ROOT / "forms"
 NG_MERMAID_FILE = MODELS_DIR / "ng_models_mermaid.mmd"
 ONTOLOGIES_FILE = REPO_ROOT / "scripts" / "ontologies.json"
 
@@ -576,6 +577,367 @@ def generate_precursor_block(mf: ModelFolder, raw_base: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Field directive parsing and table generation
+# ---------------------------------------------------------------------------
+
+# Regex to strip CRM class prefix, e.g. "E42: " or "S13: " or "crm:E42: "
+_CRM_PREFIX_RE = re.compile(r"^[A-Za-z0-9]+:\s*")
+
+# Regex to extract multiplicity lower bound from predicate, e.g. "(0 to 1)" or "(1 to 1)"
+_MULTIPLICITY_RE = re.compile(r"\((\d+)\s+to")
+
+# Regex to strip "(Alternative labels: ...)" parenthetical from tooltip text
+_ALT_LABELS_RE = re.compile(r"\s*\(Alternative labels:[^)]*\)", re.IGNORECASE)
+
+
+def _strip_crm_prefix(label: str) -> str:
+    """Strip leading CRM class prefix from a node label, e.g. 'E42: Foo' -> 'Foo'."""
+    return _CRM_PREFIX_RE.sub("", label, count=1).strip()
+
+
+def _strip_alt_labels(tooltip: str) -> str:
+    """Remove '(Alternative labels: ...)' parenthetical from tooltip text."""
+    return _ALT_LABELS_RE.sub("", tooltip).strip()
+
+
+@dataclass
+class FieldRecord:
+    """A parsed //field or //field-via directive."""
+    is_via: bool
+    node_label: str          # Full node label as written in directive col 1
+    via_label: str           # Intermediate node label (//field-via only, else "")
+    order: int
+    alternatives: List[str]  # Already deduplicated against human_label
+    explicit_desc: str       # Col 4 text (required for via, optional for direct)
+    optional_note: str       # Col 5 (//field-via) or col 4 additional note
+    # Resolved at a later stage:
+    human_label: str = ""
+    crm_code: str = ""
+    description: str = ""
+    required: str = ""       # "✓", "Optional", or "✓*"
+
+
+def _parse_field_line(line: str) -> Optional[FieldRecord]:
+    """
+    Parse a single //field or //field-via directive line.
+    Returns a FieldRecord or None if the line cannot be parsed.
+    """
+    line = line.strip()
+    is_via = line.startswith("//field-via ")
+    if is_via:
+        body = line[len("//field-via "):].strip()
+    elif line.startswith("//field "):
+        body = line[len("//field "):].strip()
+    else:
+        return None
+
+    parts = [p.strip() for p in body.split("|")]
+
+    # Need at least node + order + alternatives
+    if len(parts) < 3:
+        print(f"  WARNING: Skipping malformed field directive (too few columns): {line}")
+        return None
+
+    col1 = parts[0]
+    order_str = parts[1]
+    alts_raw = parts[2]
+    col4 = parts[3].strip() if len(parts) > 3 else ""
+    col5 = parts[4].strip() if len(parts) > 4 else ""
+
+    try:
+        order = int(order_str)
+    except ValueError:
+        print(f"  WARNING: Skipping field directive with non-integer order: {line}")
+        return None
+
+    # Parse node reference
+    if is_via:
+        # Split on " via " to get target and intermediate
+        via_parts = col1.split(" via ", 1)
+        if len(via_parts) != 2:
+            print(f"  WARNING: Skipping //field-via with missing 'via' separator: {line}")
+            return None
+        node_label = via_parts[0].strip()
+        via_label = via_parts[1].strip()
+        explicit_desc = col4
+        optional_note = col5
+    else:
+        node_label = col1
+        via_label = ""
+        explicit_desc = ""
+        optional_note = col4
+
+    # Parse alternatives, deduplicate against human label later
+    human_label = _strip_crm_prefix(node_label)
+    alts = [a.strip() for a in alts_raw.split(";") if a.strip()]
+    alts = [a for a in alts if a != human_label]
+
+    # Extract CRM code from node label prefix
+    m = re.match(r"^([A-Za-z0-9]+):", node_label)
+    crm_code = m.group(1) if m else node_label
+
+    if is_via:
+        m_via = re.match(r"^([A-Za-z0-9]+):", via_label)
+        via_code = m_via.group(1) if m_via else via_label
+        crm_code = f"{via_code} > {crm_code}"
+
+    return FieldRecord(
+        is_via=is_via,
+        node_label=node_label,
+        via_label=via_label,
+        order=order,
+        alternatives=alts,
+        explicit_desc=explicit_desc,
+        optional_note=optional_note,
+        human_label=human_label,
+        crm_code=crm_code,
+    )
+
+
+def _load_tsv_lines(tsv_path: Path) -> List[List[str]]:
+    """
+    Read a TSV file and return all lines split by tab.
+    Skips blank lines.
+    """
+    lines = []
+    try:
+        for raw in tsv_path.read_text(encoding="utf-8").splitlines():
+            if raw.strip():
+                lines.append(raw.split("\t"))
+    except Exception as e:
+        print(f"  WARNING: Could not read {tsv_path}: {e}")
+    return lines
+
+
+def _find_tooltip(node_label: str, tsv_lines: List[List[str]]) -> str:
+    """
+    Find the tooltip text for a given node label in parsed TSV lines.
+    Returns empty string if not found.
+    """
+    for parts in tsv_lines:
+        if len(parts) >= 3 and parts[0].strip() == node_label and parts[1].strip() == "tooltip":
+            return parts[2].strip()
+    return ""
+
+
+def _find_required(node_label: str, tsv_lines: List[List[str]]) -> Optional[str]:
+    """
+    Find the required status for a node by locating the predicate line
+    where the object (col 3) matches node_label and reading the multiplicity
+    lower bound from the predicate (col 2).
+    Returns "✓", "Optional", or None if not found.
+    """
+    for parts in tsv_lines:
+        if len(parts) < 3:
+            continue
+        obj = parts[2].strip()
+        pred = parts[1].strip()
+        if obj == node_label:
+            m = _MULTIPLICITY_RE.search(pred)
+            if m:
+                lower = int(m.group(1))
+                return "Optional" if lower == 0 else "✓"
+    return None
+
+
+def parse_and_resolve_fields(tsv_path: Path) -> List[FieldRecord]:
+    """
+    Parse all //field and //field-via directives from a TSV file,
+    resolve descriptions, required status, and return records sorted by order.
+    Returns an empty list if no directives are found.
+    """
+    tsv_lines = _load_tsv_lines(tsv_path)
+    records: List[FieldRecord] = []
+
+    for parts in tsv_lines:
+        raw = "\t".join(parts)
+        if not (raw.startswith("//field ") or raw.startswith("//field-via ")):
+            continue
+        rec = _parse_field_line(raw)
+        if rec is None:
+            continue
+        records.append(rec)
+
+    if not records:
+        return []
+
+    model_name = tsv_path.parent.name
+
+    for rec in records:
+        if rec.is_via:
+            # Description comes from col 4 (explicit_desc), with optional note appended
+            desc = rec.explicit_desc
+            if rec.optional_note:
+                desc = f"{desc} ({rec.optional_note})"
+            rec.description = desc
+
+            # Required: look up predicate to the intermediate node
+            req = _find_required(rec.via_label, tsv_lines)
+            if req is None:
+                print(
+                    f"  WARNING [{model_name}]: Could not derive required status for "
+                    f"//field-via '{rec.node_label} via {rec.via_label}'. Defaulting to required."
+                )
+                rec.required = "✓*"
+            else:
+                rec.required = req
+
+        else:
+            # Description: tooltip text with alt-labels parenthetical stripped,
+            # plus optional note appended in brackets if present
+            tooltip = _find_tooltip(rec.node_label, tsv_lines)
+            if tooltip:
+                desc = _strip_alt_labels(tooltip)
+            elif rec.explicit_desc:
+                desc = rec.explicit_desc
+            else:
+                print(
+                    f"  WARNING [{model_name}]: No tooltip found for //field node "
+                    f"'{rec.node_label}'. Description will be empty."
+                )
+                desc = ""
+            if rec.optional_note:
+                desc = f"{desc} ({rec.optional_note})"
+            rec.description = desc
+
+            # Required: look up predicate to this node
+            req = _find_required(rec.node_label, tsv_lines)
+            if req is None:
+                print(
+                    f"  WARNING [{model_name}]: Could not derive required status for "
+                    f"//field node '{rec.node_label}'. Defaulting to required."
+                )
+                rec.required = "✓*"
+            else:
+                rec.required = req
+
+    records.sort(key=lambda r: r.order)
+    return records
+
+
+def generate_field_table_block(tsv_path: Path) -> str:
+    """
+    Generate a markdown field reference table from //field directives in a TSV.
+    Returns an empty string if no directives are found.
+    """
+    records = parse_and_resolve_fields(tsv_path)
+    if not records:
+        return ""
+
+    has_uncertain = any(r.required == "✓*" for r in records)
+
+    lines = [
+        "| Required | Human understandable Label | Alternative Labels | CRM Code | Label Description |",
+        "|----------|---------------------------|-------------------|----------|-------------------|",
+    ]
+
+    for rec in records:
+        alts = "; ".join(rec.alternatives) if rec.alternatives else "--"
+        desc = rec.description or "--"
+        lines.append(
+            f"| {rec.required} | {rec.human_label} | {alts} | {rec.crm_code} | {desc} |"
+        )
+
+    if has_uncertain:
+        lines += [
+            "",
+            "_\\* Required status could not be derived from the model and has been "
+            "set to required by default. Please verify._",
+        ]
+
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Forms folder writers
+# ---------------------------------------------------------------------------
+
+def _forms_listing_block(models_with_fields: List[str]) -> str:
+    """Generate the FORMS-LISTING auto block content for forms/README.md."""
+    if not models_with_fields:
+        return "_No field tables have been generated yet._"
+    lines = [
+        "| Model | Field table |",
+        "|-------|-------------|",
+    ]
+    for name in sorted(models_with_fields):
+        title = model_title_from_folder(name)
+        lines.append(f"| {title} | [field-tables.md](field-tables.md#{name.replace('_', '-')}) |")
+    return "\n".join(lines)
+
+
+def write_forms_outputs(folders: Dict[str, ModelFolder]):
+    """
+    Generate forms/field-tables.md (aggregated field tables for all models
+    that have //field directives) and forms/README.md.
+    """
+    FORMS_DIR.mkdir(exist_ok=True)
+
+    models_with_fields: List[str] = []
+    sections: List[str] = []
+
+    for name, mf in sorted(folders.items()):
+        if mf.category != "model":
+            continue
+        if mf.latest_tsv is None:
+            continue
+        block = generate_field_table_block(mf.latest_tsv)
+        if not block:
+            continue
+        models_with_fields.append(name)
+        title = model_title_from_folder(name)
+        sections += [
+            f"### {title}\n",
+            block,
+            "",
+        ]
+
+    # Write field-tables.md
+    field_tables_path = FORMS_DIR / "field-tables.md"
+    if sections:
+        header = [
+            "# Field tables\n",
+            "_This file is auto-generated by `scripts/update_readmes.py`. "
+            "Do not edit directly -- update the source TSV model files instead._\n",
+            "Each section below corresponds to a model that contains `//field` "
+            "or `//field-via` directives. Tables are intended to support form "
+            "and data input design. See [CONTRIBUTING.md](../CONTRIBUTING.md) "
+            "for guidance on adding field directives to a model.\n",
+        ]
+        content = "\n".join(header + sections)
+    else:
+        content = (
+            "# Field tables\n\n"
+            "_No field tables have been generated yet. Add `//field` directives "
+            "to a model TSV to populate this document._\n"
+        )
+    field_tables_path.write_text(content, encoding="utf-8")
+
+    # Write forms/README.md from template or bootstrap
+    template_path = FORMS_DIR / "README.template.md"
+    listing_block = _forms_listing_block(models_with_fields)
+
+    if template_path.exists():
+        template = template_path.read_text(encoding="utf-8")
+        readme_content = replace_auto_block(template, "FORMS-LISTING", listing_block)
+    else:
+        readme_content = "\n".join([
+            "# Forms and Data Input Resources\n",
+            "This folder contains resources to support the design of forms and "
+            "data input interfaces derived from the HPSWG semantic models.\n",
+            "<!-- BEGIN AUTO: FORMS-LISTING -->",
+            listing_block,
+            "<!-- END AUTO: FORMS-LISTING -->",
+        ])
+    (FORMS_DIR / "README.md").write_text(readme_content, encoding="utf-8")
+
+    if models_with_fields:
+        print(f"  Field tables generated for: {', '.join(sorted(models_with_fields))}")
+    else:
+        print("  No //field directives found in any model -- forms/field-tables.md placeholder written.")
+
+
+# ---------------------------------------------------------------------------
 # README writers
 # ---------------------------------------------------------------------------
 
@@ -687,6 +1049,20 @@ def write_per_model_readmes(
                 "> **Status: Planned** -- This model folder is reserved for "
                 "future development. No files are available yet.\n",
             ]
+
+        # Field reference table (only if //field directives are present)
+        if mf.latest_tsv:
+            field_block = generate_field_table_block(mf.latest_tsv)
+            if field_block:
+                lines += [
+                    "## Field reference\n",
+                    "This table lists the fields defined for data entry or display, "
+                    "derived from `//field` and `//field-via` directives in the model. "
+                    "See the [forms folder](../../forms/field-tables.md) for the "
+                    "aggregated cross-model view.\n",
+                    field_block,
+                    "",
+                ]
 
         # Contributing guidance
         lines += [
@@ -807,6 +1183,7 @@ def main():
     write_models_readme(folders, raw_base, ng_tsvs, ontologies)
     write_per_model_readmes(folders, raw_base, ontologies)
     write_reports_readme(raw_base)
+    write_forms_outputs(folders)
 
     # Write ONTOLOGIES.md if it does not exist yet (first-run bootstrap)
     ontologies_md_path = REPO_ROOT / "ONTOLOGIES.md"

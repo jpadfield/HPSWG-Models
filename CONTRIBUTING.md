@@ -63,7 +63,7 @@ Use for fields that are present as nodes in the model.
 | `ALTERNATIVES` | Semicolon-separated list of alternative labels, e.g. `Project ID; PID` |
 | `OPTIONAL NOTE` | Additional contextual note appended in brackets to the label description in the table. May also contain a `behaviour:` tag (see below). Omit if not needed. |
 
-The human-readable label is derived by stripping the CRM prefix from the node label. The label description is taken from the node's `tooltip` line in the model. The required status is derived from the multiplicity lower bound in the predicate connecting the node to its parent. Alternative labels that duplicate the human label are silently removed.
+The human-readable label is derived by stripping the CRM prefix from the node label. The label description is taken from the node's `tooltip` line in the model -- **a tooltip is required on every node declared in a `//field` directive**; a missing tooltip will produce an empty description cell and a warning in the GitHub Actions log. The required status is derived from the multiplicity lower bound in the predicate connecting the node to its parent. Alternative labels that duplicate the human label are silently removed.
 
 Example:
 
@@ -82,19 +82,21 @@ Use for fields that are not present as nodes in the model but are practically ne
 
 | Part | Description |
 |---|---|
-| `TARGET` | The node carrying the value, e.g. `E39: Artist` |
-| `INTERMEDIATE` | The node present in the model through which the target is reached, e.g. `E12: Production` |
+| `TARGET` | The terminal node carrying the value, e.g. `E39: Creator`. The human-readable label is derived from this node label by stripping the CRM prefix. |
+| `INTERMEDIATE` | The node present in the current model through which the target is reached, e.g. `E12: Production Event` |
 | `ORDER` | Integer controlling the row order in the generated table |
 | `ALTERNATIVES` | Semicolon-separated list of alternative labels |
-| `DESCRIPTION` | Required label description, since there is no tooltip to draw from |
+| `DESCRIPTION` | Required label description. There is no tooltip to draw from in the current model, so this column is mandatory. |
 | `OPTIONAL NOTE` | Additional contextual note appended in brackets after the description. May also contain a `behaviour:` tag (see below). Omit if not needed. |
 
-The CRM Code column in the generated table displays the navigation path, e.g. `E12 > E39`. The human-readable label is derived by stripping the CRM prefix from the target node label. Alternative labels that duplicate the human label are silently removed.
+The CRM Code column in the generated table displays the navigation path as `INTERMEDIATE_CODE > TARGET_CODE`, e.g. `E12 > E39`. Required status is derived from the predicate connecting the intermediate node to the primary entity of the model. Alternative labels that duplicate the human label are silently removed.
 
 Example:
 
 ```
-//field-via E39: Artist via E12: Production | 3 | Creator of heritage object; Artist; Creator | The actor who carried out the production. | behaviour:select
+//field-via E39: Creator via E12: Production Event | 21 | Artist; Creator | The actor (artist, studio, workshop) who carried out the production. | behaviour:ingested
+//field-via E52: Date of Production via E12: Production Event | 22 | Date of Production | The date or timespan during which the heritage object was produced. | behaviour:ingested
+//field-via E53: Place of Production via E12: Production Event | 23 | Place of Production | The location where the heritage object was created. | behaviour:ingested
 ```
 
 ### Behaviour tags
@@ -131,9 +133,13 @@ Field directives use `|` as the column separator and `;` as the separator within
 
 ## Tooltips and label descriptions
 
-The `tooltip` predicate adds hover text to a node in the Dynamic Modeller diagram. For nodes included via `//field` directives, the tooltip text is also used as the label description in the generated field table. Tooltips should therefore serve both purposes: concise enough for a diagram tooltip, complete enough to describe the field to a data entry user.
+The `tooltip` predicate adds hover text to a node in the Dynamic Modeller diagram. For nodes included via `//field` directives, the tooltip text is also used as the label description in the generated field table. Tooltips must therefore serve both purposes: concise enough for a diagram tooltip, complete enough to describe the field to a data entry user.
+
+**Every node declared in a `//field` directive must have a tooltip.** A missing tooltip will produce an empty description cell in the field table and a warning in the GitHub Actions log.
 
 Where tooltip text and the intended label description have drifted apart, the tooltip should be updated to match. The TSV model is the single source of truth -- the generated field tables are derived output.
+
+Note that tooltip lines in the Linked Entities block and on the same node in the model body are separate lines and may have different text. The body tooltip is used for the field table; both should be aligned for diagram hover consistency.
 
 ---
 

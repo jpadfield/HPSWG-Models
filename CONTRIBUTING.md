@@ -61,15 +61,15 @@ Use for fields that are present as nodes in the model.
 | `NODE` | The node label as it appears in the model, e.g. `E42: Persistent Identifier (PID)` |
 | `ORDER` | Integer controlling the row order in the generated table |
 | `ALTERNATIVES` | Semicolon-separated list of alternative labels, e.g. `Project ID; PID` |
-| `OPTIONAL NOTE` | Additional contextual note appended in brackets to the label description in the table. Omit if not needed. |
+| `OPTIONAL NOTE` | Additional contextual note appended in brackets to the label description in the table. May also contain a `behaviour:` tag (see below). Omit if not needed. |
 
 The human-readable label is derived by stripping the CRM prefix from the node label. The label description is taken from the node's `tooltip` line in the model. The required status is derived from the multiplicity lower bound in the predicate connecting the node to its parent. Alternative labels that duplicate the human label are silently removed.
 
 Example:
 
 ```
-//field E42: Persistent Identifier (PID) | 1 | Project ID; PID
-//field E7: Parent Project | 9 | Programme; Umbrella Project | Could be mapped as E89 Propositional Object but ResearchSpace implements it as E7 Activity.
+//field E42: Persistent Identifier (PID) | 1 | Project ID; PID | behaviour:pid
+//field E7: Parent Project | 9 | Programme; Umbrella Project | behaviour:select; Could be mapped as E89 Propositional Object but ResearchSpace implements it as E7 Activity.
 ```
 
 ### `//field-via`
@@ -87,19 +87,45 @@ Use for fields that are not present as nodes in the model but are practically ne
 | `ORDER` | Integer controlling the row order in the generated table |
 | `ALTERNATIVES` | Semicolon-separated list of alternative labels |
 | `DESCRIPTION` | Required label description, since there is no tooltip to draw from |
-| `OPTIONAL NOTE` | Additional contextual note appended in brackets after the description. Omit if not needed. |
+| `OPTIONAL NOTE` | Additional contextual note appended in brackets after the description. May also contain a `behaviour:` tag (see below). Omit if not needed. |
 
 The CRM Code column in the generated table displays the navigation path, e.g. `E12 > E39`. The human-readable label is derived by stripping the CRM prefix from the target node label. Alternative labels that duplicate the human label are silently removed.
 
 Example:
 
 ```
-//field-via E39: Artist via E12: Production | 3 | Creator of heritage object; Artist; Creator | The actor who carried out the production.
+//field-via E39: Artist via E12: Production | 3 | Creator of heritage object; Artist; Creator | The actor who carried out the production. | behaviour:select
 ```
+
+### Behaviour tags
+
+A `behaviour:` tag may be included in the optional note column of any `//field` or `//field-via` directive. It describes how a user is expected to interact with the field and is rendered as a colour-coded badge in the generated field table. The tag is extracted automatically and does not appear in the label description.
+
+The tag is written as `behaviour:TAG` and may be combined with a plain-text note using `;` as the separator:
+
+```
+//field E55: Project Type | 10 | Campaign; Research Project; Survey | behaviour:list
+//field E7: Parent Project | 9 | Programme; Umbrella Project | behaviour:select; Could be mapped as E89 Propositional Object.
+```
+
+Valid behaviour tags:
+
+| Tag | Label | Meaning |
+|-----|-------|---------|
+| `free-text` | Free Text | User types a value directly; no controlled format |
+| `list` | Controlled List | User selects from a pick list or dropdown |
+| `select` | Select Entity | User searches for and links to an existing entity record |
+| `pid` | External ID | User looks up or pastes an externally minted persistent identifier |
+| `system-id` | System ID | Value is pre-structured or auto-populated; user may edit if permitted |
+| `ingested` | Ingested | Value arrives via a batch or import process; user does not enter directly |
+| `inherited` | Inherited | Value is pre-filled from a parent entity; user may edit if needed |
+| `auto` | Automatic | System-assigned read-only value; user cannot edit |
+
+An unrecognised tag will produce a warning in the GitHub Actions log and the badge will be omitted from the table.
 
 ### Delimiter note
 
-Field directives use `|` as the column separator and `;` as the separator within the alternatives list. Do not use commas to separate alternative labels -- the Dynamic Modeller normalises comma-separated values to tabs during processing, which will corrupt the directive.
+Field directives use `|` as the column separator and `;` as the separator within the alternatives list and between items in the optional note column. Do not use commas to separate alternative labels -- the Dynamic Modeller normalises comma-separated values to tabs during processing, which will corrupt the directive.
 
 ---
 

@@ -90,6 +90,6 @@ E22: Heritage Object	P138i_has_representation (0 to n)	EX_Digital_Image: Object 
 //field EX_Digital_Image: Main Object Image | 19 | Main Object Image | behaviour:ingested
 //field EX_Digital_Image: Object Image | 20 | Object Image; Other Images | behaviour:ingested
 
-//field-via E12: Production Event via E39 | 21 | Creator of Heritage Object; Artist; Creator | The actor (artist, studio, workshop) who carried out the production. | behaviour:ingested
-//field-via E12: Production Event via E52 | 22 | Date of Production | The date or timespan during which the heritage object was produced. | behaviour:ingested
-//field-via E12: Production Event via E53 | 23 | Place of Production | The location where the heritage object was created. | behaviour:ingested
+//field-via E39: Creator via E12 | 21 | Creator of Heritage Object; Artist; Creator | The actor (artist, studio, workshop) who carried out the production. | behaviour:ingested
+//field-via E52 Date of Production via E12 | 22 | Date of Production | The date or timespan during which the heritage object was produced. | behaviour:ingested
+//field-via E53: Place of Production via E12 | 23 | Place of Production | The location where the heritage object was created. | behaviour:ingested

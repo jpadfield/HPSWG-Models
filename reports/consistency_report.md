@@ -1,8 +1,8 @@
 # Model Consistency Report
 
-_Generated: 2026-03-20 17:07 UTC_
+_Generated: 2026-03-23 10:59 UTC_
 
-**Individual model files analysed:** 15  
+**Individual model files analysed:** 16  
 **Workflow/overview files analysed:** 1  
 
 This report checks consistency of inter-model linking nodes declared in each model's `//subgraph Linked Entities` block. Only declared linked entities are checked -- high-multiplicity classes such as E55 type terms are not flagged unless explicitly declared.
@@ -71,7 +71,7 @@ Each model's linked entities are listed with their declared target models and co
 | `E57: Medium` | `E57` | `crm:E57` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
 | `E57: Other Material` | `E57` | `crm:E57` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
 | `E22: Support` | `E22` | `heritage_object_part` → `E22/S20: Heritage Object Part` | ✅ Consistent |
-| `E12: Production Event` | `E12` | `production_event` → `E12: Production` | ✅ Consistent |
+| `E12: Production Event` | `E12` | `production` → `E12: Production` | ✅ Consistent |
 | `EX_Digital_Image: Main Object Image` | `EX_Digital_Image` | `rs:EX_Digital_Image` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
 | `EX_Digital_Image: Object Image` | `EX_Digital_Image` | `rs:EX_Digital_Image` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
 
@@ -86,7 +86,7 @@ Each model's linked entities are listed with their declared target models and co
 | `E31: Report or Document` | `E31` | `crm:E31` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
 | `E57: Material` | `E57` | `crm:E57` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
 | `E54: Dimensions` | `E54` | `crm:E54` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
-| `E12: Production Event` | `E12` | `production_event` → `E12: Production` | ✅ Consistent |
+| `E12: Production Event` | `E12` | `production` → `E12: Production` | ✅ Consistent |
 | `E22/S13: Heritage Sample` | `E22/S13` | `sample` → `E22: Physical Sample` | ✅ Consistent |
 
 </details>
@@ -125,7 +125,7 @@ Each model's linked entities are listed with their declared target models and co
 </details>
 
 <details>
-<summary><strong>production_event/production_event_v1.1.tsv</strong> -- 5 confirmed</summary>
+<summary><strong>production/production_v1.1.tsv</strong> -- 5 confirmed</summary>
 
 | Linked entity | Class code | Declared target(s) | Status |
 | --- | --- | --- | --- |
@@ -156,7 +156,7 @@ Each model's linked entities are listed with their declared target models and co
 
 | Linked entity | Class code | Declared target(s) | Status |
 | --- | --- | --- | --- |
-| `S2: Sample Taking` | `S2` | `sample_taking_event` → `S2: Sample Taking` | ✅ Consistent |
+| `S2: Sample Taking` | `S2` | `sample_taking` → `S2: Sample Taking` | ✅ Consistent |
 | `S24: Sample Splitting` | `S24` | `sample_splitting` → `S24: Sample Splitting` | ✅ Consistent |
 | `E39: Organisation or Person` | `E39` | `person` → `E21: Person` | ✅ Consistent (confirmed hierarchy match) |
 |  |  | `organisation` → `E74: Organisation` | ✅ Consistent (confirmed hierarchy match) |
@@ -208,7 +208,7 @@ Each model's linked entities are listed with their declared target models and co
 | --- | --- | --- | --- |
 | `E22: Heritage Object` | `E22` | `heritage_object` → `E22: Heritage Object` | ✅ Consistent |
 | `E22/S13: Heritage Sample` | `E22/S13` | `sample` → `E22: Physical Sample` | ✅ Consistent |
-| `S2: Sample Taking` | `S2` | `sample_taking_event` → `S2: Sample Taking` | ✅ Consistent |
+| `S2: Sample Taking` | `S2` | `sample_taking` → `S2: Sample Taking` | ✅ Consistent |
 | `E31: Report or Document` | `E31` | `crm:E31` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
 | `EX_Digital_Image: Main Site Image` | `EX_Digital_Image` | `rs:EX_Digital_Image` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
 | `EX_Digital_Image: Site Image` | `EX_Digital_Image` | `rs:EX_Digital_Image` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
@@ -247,7 +247,7 @@ Each model's linked entities are listed with their declared target models and co
 </details>
 
 <details>
-<summary><strong>sample_taking_event/sample_taking_event_v1.6.tsv</strong> -- 8 confirmed</summary>
+<summary><strong>sample_taking/sample_taking_v1.6.tsv</strong> -- 8 confirmed</summary>
 
 | Linked entity | Class code | Declared target(s) | Status |
 | --- | --- | --- | --- |
@@ -263,7 +263,7 @@ Each model's linked entities are listed with their declared target models and co
 </details>
 
 <details>
-<summary><strong>sampling_event/sampling_event_v1.1.tsv</strong> -- 8 confirmed</summary>
+<summary><strong>sampling_activity/sampling_activity_v1.1.tsv</strong> -- 8 confirmed</summary>
 
 | Linked entity | Class code | Declared target(s) | Status |
 | --- | --- | --- | --- |
@@ -272,7 +272,7 @@ Each model's linked entities are listed with their declared target models and co
 | `E39: Institution or Person` | `E39` | `person` → `E21: Person` | ✅ Consistent (confirmed hierarchy match) |
 |  |  | `organisation` → `E74: Organisation` | ✅ Consistent (confirmed hierarchy match) |
 | `E53: Sampling Location` | `E53` | `location` → `E53: Location` | ✅ Consistent |
-| `S2: Sample Taking` | `S2` | `sample_taking_event` → `S2: Sample Taking` | ✅ Consistent |
+| `S2: Sample Taking` | `S2` | `sample_taking` → `S2: Sample Taking` | ✅ Consistent |
 | `E22: Heritage Object` | `E22` | `heritage_object` → `E22: Heritage Object` | ✅ Consistent |
 | `E7: Project` | `E7` | `project` → `E7: Project` | ✅ Consistent |
 
@@ -282,4 +282,4 @@ Each model's linked entities are listed with their declared target models and co
 
 These formed model files do not contain a `//subgraph Linked Entities` block. Add the block to enable consistency checking.
 
-_All individual models have a Linked Entities subgraph._
+- `user_workflows/workflow_user_sample_taking_v1.0.tsv`

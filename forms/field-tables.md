@@ -61,3 +61,29 @@ _An organised activity or campaign with a defined purpose, scope, ownership, and
 | Optional | Parent Project | Programme; Umbrella Project | E7 | ![behaviour: Select Entity](https://img.shields.io/badge/%2F%2F-Select%20Entity-8250df) | A broader project or programme within which this project is situated. Note: sometimes treated as E89 Propositional Object in other mappings, but can be implemented as E7 Activity in ResearchSpace. |
 | ✓ | Project Type | Campaign; Research Project; Survey | E55 | ![behaviour: Controlled List](https://img.shields.io/badge/%2F%2F-Controlled%20List-1a7f37) | A simple classification describing the nature of the project. |
 | ✓ | condition state type | Planned; Ongoing; Completed; Legacy | E55 | ![behaviour: Controlled List](https://img.shields.io/badge/%2F%2F-Controlled%20List-1a7f37) | Indicates the current state or completion level of the project. |
+
+### Sampling activity
+
+[`models/sampling_activity`](../models/sampling_activity/) | [v1.2](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sampling_activity/sampling_activity_v1.2.tsv) | [Open in Modeller](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sampling_activity/sampling_activity_v1.2.tsv)
+
+This model defines a broader Sampling Activity (E7) at the Object level, that groups shared metadata (who, when, where, why, and documentation) for one or more individual sample extraction activities. Each extraction is represented as a nested S2: Sample Taking event linked from the Sampling Activity. This allows shared context to be captured once, while extraction-specific links (sample site, removed sample, and observation) are recorded per individual Sample Taking event.
+
+_The overall sampling session or campaign event in which one or more individual sample extractions were carried out._
+
+| Required | Human understandable Label | Alternative Labels | CRM Code | Behaviour | Label Description |
+|----------|---------------------------|-------------------|----------|-----------|-------------------|
+| Optional | Persistent Identifier (UUID) | Sampling Activity PID; PID | E42 | ![behaviour: External ID](https://img.shields.io/badge/%2F%2F-External%20ID-0e7490) | -- |
+| ✓ | Unique System Label or ID | Database or System ID; Label | E41 | ![behaviour: System ID](https://img.shields.io/badge/%2F%2F-System%20ID-57606a) | Required within some documentation or database systems, such as ResearchSpace required label. |
+| ✓ | Heritage Object | Link to Heritage Object | E22 | ![behaviour: Select Entity](https://img.shields.io/badge/%2F%2F-Select%20Entity-8250df) | A human-made work of art that forms the physical source object from which the sample is taken. |
+| Optional | Reason for Sampling | Reason for Sampling Activity; Overall Purpose | E73 | ![behaviour: Free Text](https://img.shields.io/badge/%2F%2F-Free%20Text-0969da) | The overall motivation for carrying out the Sampling Activity/session. This describes the research, conservation, or technical question being addressed and may apply to one or more individual sample takings. |
+| ✓* | Sampling Activity Comments | Description | E73 | ![behaviour: Free Text](https://img.shields.io/badge/%2F%2F-Free%20Text-0969da) | A brief factual description of the overall Sampling Activity/session (global context), focusing on notable session-level circumstances or exceptions, without repeating details that belong to individual sample taking events. |
+| Optional | Report or Document | Related Document(s); Reports; Publications; Summaries | E31 | ![behaviour: Select Entity](https://img.shields.io/badge/%2F%2F-Select%20Entity-8250df) | A textual or digital document recording information related to the sampling process, results, or reasoning. |
+| ✓ | Sampling Date | Date of Sampling Activity; Date | E52 | ![behaviour: Free Text](https://img.shields.io/badge/%2F%2F-Free%20Text-0969da) | The period of the full event including all the time spans of all of the related sample taking events. |
+| ✓ | Method or Procedure | Method; Procedure | E29 | ![behaviour: Select Entity](https://img.shields.io/badge/%2F%2F-Select%20Entity-8250df) | A defined sampling protocol or procedure that may be referenced for standard approaches. |
+| ✓ | Institution or Person | Planned By | E39 | ![behaviour: Select Entity](https://img.shields.io/badge/%2F%2F-Select%20Entity-8250df) | The actor (individual or organisation) responsible for carrying out or authorising the sampling activity. |
+| ✓ | Sampling Location | Location of Sampling Activity; Location | E53 | ![behaviour: Select Entity](https://img.shields.io/badge/%2F%2F-Select%20Entity-8250df) | The physical place where the sampling activity occurred, typically within an institution or laboratory. |
+| Optional | Project | -- | E7 | ![behaviour: Select Entity](https://img.shields.io/badge/%2F%2F-Select%20Entity-8250df) | The individual event of taking a sample. |
+| ✓ | Condition state (Object Status) | Status of Heritage Object at Time of Sampling; Object Status | S4 > E3 | ![behaviour: Controlled List](https://img.shields.io/badge/%2F%2F-Controlled%20List-1a7f37) | The state of the object as a whole at the time of sampling, for example during cleaning. |
+| ✓ | Sample Taking | Cross-reference to Sample Taking | S2 | ![behaviour: Select Entity](https://img.shields.io/badge/%2F%2F-Select%20Entity-8250df) | The individual event of taking a sample. |
+
+_\* Required status could not be derived from the model and has been set to required by default. Please verify._

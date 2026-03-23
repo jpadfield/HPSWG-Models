@@ -28,6 +28,7 @@ Fields without a behaviour badge have not yet been tagged. See [CONTRIBUTING.md]
 |-------|-------------|
 | Heritage object | [field-tables.md](field-tables.md#heritage-object) |
 | Project | [field-tables.md](field-tables.md#project) |
+| Sampling activity | [field-tables.md](field-tables.md#sampling-activity) |
 <!-- END AUTO: FORMS-LISTING -->
 
 ## Relationship to the models

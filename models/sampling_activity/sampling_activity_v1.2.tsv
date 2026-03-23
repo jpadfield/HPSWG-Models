@@ -24,7 +24,7 @@ E7: Project	tooltip	The individual event of taking a sample.	event2-fs24|
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Sampling Activity (shared metadata captured once at the object level)
 ////////////////////////////////////////////////////////////////////////////////////////////////
-E7: Sampling Activity	P48_has_preferred_identifier (1 to 1)	E42: Persistent Identifier (UUID)	|url
+E7: Sampling Activity	P48_has_preferred_identifier (0 to 1)	E42: Persistent Identifier (UUID)	|url
 E7: Sampling Activity	P12_occurred_in_the_presence_of (1 to 1)	E22: Heritage Object
 E7: Sampling Activity	P1_is_identified_by (1 to 1)	E41: Unique System Label or ID	|name
 E41: Unique System Label or ID	tooltip	Required within some documentation or database systems, such as ResearchSpace required label.
@@ -33,7 +33,7 @@ E7: Sampling Activity	P70i_is_documented_in (0 to n)	E31: Report or Document	|do
 E7: Sampling Activity	P17_was_motivated_by (0 to 1)	E73: Reason for Sampling	|literal
 E7: Sampling Activity	P67i_is_referred_to_by (1 to 1)	E73: Description	|literal
 E73: Reason for Sampling	tooltip	The overall motivation for carrying out the Sampling Activity/session. This describes the research, conservation, or technical question being addressed and may apply to one or more individual sample takings.
-E73: Description	tooltip	A brief factual description of the overall Sampling Activity/session (global context), focusing on notable session-level circumstances or exceptions, without repeating details that belong to individual sample taking events.
+E73: Sampling Activity Comments	tooltip	A brief factual description of the overall Sampling Activity/session (global context), focusing on notable session-level circumstances or exceptions, without repeating details that belong to individual sample taking events.
 E73: Description	P45i_is incorporated in (0 to n)	E31: Report or Document	|document
 E73: Reason for Sampling	P45i_is incorporated in (0 to n)	E31: Report or Document	|document
 E7: Sampling Activity	P14_carried_out_by (1 to n)	E39: Institution or Person
@@ -44,9 +44,24 @@ E52: Sampling Date	tooltip	The period of the full event including all the time s
 E7: Sampling Activity	P33_used_specific_technique (1 to n)	E29: Method or Procedure	|document
 E7: Sampling Activity	P7_took_place_at (1 to 1)	E53: Sampling Location	|place
 E7: Sampling Activity	P9_consists_of (1 to n)	S2: Sample Taking	|event
-E7: Sampling Activity	crm:P9i_forms_part_of	E7: Project
+E7: Sampling Activity	crm:P9i_forms_part_of (0 to n)	E7: Project
 E7: Sampling Activity	P9_consists_of (1 to 1)	S4: Observation	|event
 S4: Observation	O8_observed (1 to 1)	E22: Heritage Object
 S4: Observation	O16_observed_value (1 to 1)	E3: Condition state (Object Status)	|period
 E3: Condition state (Object Status)	P2_has_type (1 to 1)	E55: condition state type	|type
 E55: condition state type	tooltip	The current condition, treatment state, or lifecycle position of a heritage object, conservation history, handling, availability, or degree of alteration over time.
+
+
+//field E42: Persistent Identifier (UUID) | 1 | Sampling Activity PID; PID | behaviour:pid
+//field E41: Unique System Label or ID | 2 | Database or System ID; Label | behaviour:system-id
+//field E22: Heritage Object | 3 | Heritage Object; Link to Heritage Object | behaviour:select
+//field E73: Reason for Sampling | 4 | Reason for Sampling Activity; Overall Purpose | behaviour:free-text
+//field E73: Sampling Activity Comments | 5 | Description | behaviour:free-text
+//field E31: Report or Document | 6 | Related Document(s); Reports; Publications; Summaries | behaviour:select
+//field E52: Sampling Date | 7 | Date of Sampling Activity; Sampling Date; Date | behaviour:free-text
+//field E29: Method or Procedure | 8 | Method; Procedure | behaviour:select
+//field E39: Institution or Person | 9 | Planned By | behaviour:select
+//field E53: Sampling Location | 10 | Location of Sampling Activity; Location; Sampling Location | behaviour:select
+//field E7: Project | 11 | Project | behaviour:select
+//field-via E3: Condition state (Object Status) via S4: Observation | 12 | Status of Heritage Object at Time of Sampling; Object Status | The state of the object as a whole at the time of sampling, for example during cleaning. | behaviour:list
+//field S2: Sample Taking | 13 | Cross-reference to Sample Taking | behaviour:select

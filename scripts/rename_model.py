@@ -27,10 +27,10 @@ from pathlib import Path
 
 RENAMES = [
     #("production_event", "production"),
-    ("sample_taking_event", "sample_taking"),
-    ("sampling_event", "sampling_activity"),
-    ("sample_imaging_event", "sample_imaging"),
-    ("sample_preparation_event", "sample_preparation"),
+    #("sample_taking_event", "sample_taking"),
+    #("sampling_event", "sampling_activity"),
+    #("sample_imaging_event", "sample_imaging"),
+    #("sample_preparation_event", "sample_preparation"),
 ]
 
 # ---------------------------------------------------------------------------

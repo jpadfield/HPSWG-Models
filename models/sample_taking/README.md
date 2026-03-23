@@ -39,6 +39,8 @@ This table lists the fields defined for data entry or display, derived from `//f
 
 [`models/sample_taking`](../models/sample_taking/) | [v1.7](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sample_taking/sample_taking_v1.7.tsv) | [Open in Modeller](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sample_taking/sample_taking_v1.7.tsv)
 
+This model captures metadata specific to an individual sample taking event within a broader Sampling Activity. Many fields here are optional because values defined at the Sampling Activity level -- such as date, method, location, and responsible actor -- apply to all sample takings within that activity and do not need to be repeated unless they differ for this specific event. Fields that are always recorded at this level include the link to the sample produced, the sample site, the heritage object, and the system identifier.
+
 _The event in which a material sample was physically removed from the painting._
 
 | Required | Human understandable Label | Alternative Labels | CRM Code | Behaviour | Label Description |

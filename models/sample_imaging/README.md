@@ -1,4 +1,4 @@
-# Sample imaging event
+# Sample imaging
 
 ![Status: Precursor](https://img.shields.io/badge/status-precursor-orange)
 
@@ -21,7 +21,7 @@ See [`ONTOLOGIES.md`](../ONTOLOGIES.md) for full version details, source links, 
 
 | File | Raw link |
 |------|----------|
-| `sample_imaging_event_precursor_v1.0.txt` | [View raw](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sample_imaging_event/sample_imaging_event_precursor_v1.0.txt) |
+| `sample_imaging_precursor_v1.0.txt` | [View raw](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sample_imaging/sample_imaging_precursor_v1.0.txt) |
 
 ## Contributing
 

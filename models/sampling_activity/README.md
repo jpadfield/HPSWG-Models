@@ -40,7 +40,7 @@ _The overall sampling session or campaign event in which one or more individual 
 
 | Required | Human understandable Label | Alternative Labels | CRM Code | Behaviour | Label Description |
 |----------|---------------------------|-------------------|----------|-----------|-------------------|
-| Optional | Sampling activity PID | Persistent Identifier (UUID); PID | E42 | ![behaviour: External ID](https://img.shields.io/badge/%2F%2F-External%20ID-0e7490) | -- |
+| Optional | Sampling activity PID | Persistent Identifier (UUID); PID | E42 | ![behaviour: External ID](https://img.shields.io/badge/%2F%2F-External%20ID-0e7490) | An optional public unique identifier (PID) for the sample activity. Any of the IDs defined could be flagged as a preferred ID within a documentation system. |
 | ✓ | Unique System Label or ID | Database or System ID; Label | E41 | ![behaviour: System ID](https://img.shields.io/badge/%2F%2F-System%20ID-57606a) | Required within some documentation or database systems, such as ResearchSpace required label. |
 | ✓ | Heritage Object | Link to Heritage Object | E22 | ![behaviour: Select Entity](https://img.shields.io/badge/%2F%2F-Select%20Entity-8250df) | A human-made work of art that forms the physical source object from which the sample is taken. |
 | Optional | Reason for Sampling | Reason for Sampling Activity; Overall Purpose | E73 | ![behaviour: Free Text](https://img.shields.io/badge/%2F%2F-Free%20Text-0969da) | The overall motivation for carrying out the Sampling Activity/session. This describes the research, conservation, or technical question being addressed and may apply to one or more individual sample takings. |

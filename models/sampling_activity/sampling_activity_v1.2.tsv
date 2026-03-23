@@ -35,11 +35,11 @@ E7: Sampling Activity	P17_was_motivated_by (0 to 1)	E73: Reason for Sampling	|li
 E7: Sampling Activity	P67i_is_referred_to_by (1 to 1)	E73: Sampling Activity Comment	|literal
 E73: Reason for Sampling	tooltip	The overall motivation for carrying out the Sampling Activity/session. This describes the research, conservation, or technical question being addressed and may apply to one or more individual sample takings.
 E73: Sampling Activity Comment	tooltip	A brief factual description of the overall Sampling Activity/session (global context), focusing on notable session-level circumstances or exceptions, without repeating details that belong to individual sample taking events.
-E73: Description	P45i_is incorporated in (0 to n)	E31: Report or Document	|document
+E73: Sampling Activity Comment	P45i_is incorporated in (0 to n)	E31: Report or Document	|document
 E73: Reason for Sampling	P45i_is incorporated in (0 to n)	E31: Report or Document	|document
 E7: Sampling Activity	P14_carried_out_by (1 to n)	E39: Planned by
 E7: Sampling Activity	P4_has_time_span (1 to 1)	E52: Sampling Date	|period
-E52: Sampling Date	tooltip	The period of the full event including all the time spans of all of the related sample taking events.
+E52: Sampling Date	tooltip	The date or date range of the sampling activity, spanning all related sample taking events.
 //E7: Sampling Activity	P17_was_motivated_by (0 to n)	E55: material of interest	|type
 //E55: material of interest	tooltip	The material or material class that motivated the sampling, such as a varnish layer, paint component, or specific pigment. This records the intended focus and does not imply analytical confirmation.
 E7: Sampling Activity	P33_used_specific_technique (1 to n)	E29: Method or Procedure	|document

@@ -1,10 +1,10 @@
 //flowchart LR
 S2: Sample Taking	tooltip	The event in which a material sample was physically removed from the painting.	event-fs32
 S2: Sample Taking	has note	Document Note: Sample Taking Model Overview
-Document Note: Sample Taking Model Overview	tooltip	This model defines the Sample Taking event (S2), which represents the physical act of removing a material sample from a painting for scientific or conservation purposes. It captures the essential contextual, procedural, and documentary elements that define when, where, how, and by whom the sampling took place. Each event is linked to the painting from which the sample was taken, the specific Sample Site (E26) on the object, and the Sample (S13) that was removed. The event records the actors responsible, the date or time span, and any motivating reasons or methodological references, ensuring that both procedural and scientific intent are clearly documented. The model also supports connections to Reports or Documents (E31) containing relevant descriptions, justifications, or results, and to a Sampling Location (E53) that identifies the place where the activity occurred—such as a conservation studio or laboratory. Together, these relationships provide a complete contextual record of the sampling process, enabling reproducibility, accountability, and interoperability within wider heritage science workflows.
+Document Note: This model captures metadata specific to an individual sample taking event within a broader Sampling Activity. Many fields here are optional because values defined at the Sampling Activity level -- such as date, method, location, and responsible actor -- apply to all sample takings within that activity and do not need to be repeated unless they differ for this specific event. Fields that are always recorded at this level include the link to the sample produced, the sample site, the heritage object, and the system identifier.
 
 //subgraph Linked Entities
-E22: Heritage Object	tooltip	A human-made work of art that forms the physical source object from which the sample is taken.	object-fs24|
+E22: Heritage Object	tooltip	E22 is a duplicate to the one defined at the parent activity but a key property is required here for the CRM Sci linking the S2, via an O3 to the E22.	object-fs24|
 //links E22: Heritage Object --> heritage_object
 
 //subgraph E22/S13: Heritage Sample
@@ -15,13 +15,13 @@ S13: Material Sample	tooltip	The removed matter treated as an amount of matter (
 
 E31: Report or Document	tooltip	Primarily related to authored notes, reports and publications, however there is a whole range of relevant documents that can reference or be linked to this event.	document-fs24|
 //links E31: Report or Document --> crm:E31
-E29: Method or Procedure	tooltip	The defined process or protocol followed during the sampling or analysis activity.	document-fs24|
+E29: Method or Procedure	tooltip	The defined process or protocol followed during the sampling or analysis activity (if different from method indicated in sampling activity).	document-fs24|
 //links E29: Method or Procedure --> crm:E29
-E39: Sample taken by	tooltip	The actor (individual or organisation) responsible for carrying out or authorising the sampling activity.	actor-fs24|
+E39: Sample taken by	tooltip	Name of person (or institution) who took the sample (if different from the person/institution defined at sampling activity level). When person is unknown, ‘unknown person’ or the institution (which is usually known) should be recorded.	actor-fs24|
 //links E39: Sample taken by --> person, organisation [confirmed]
 E53: Sampling Location	tooltip	The physical place where the sampling event occurred, typically within an organisation or laboratory.	place-fs24|
 //links E53: Sampling Location --> location
-E26: Sample Site	tooltip	The specific point or small area on the painting where the sample was taken.	place-fs24|
+E26: Sample Site	tooltip	The specific point or small area on the heritage object where the sample was taken.	place-fs24|
 //links E26: Sample Site --> sample_site
 //end sg1
 

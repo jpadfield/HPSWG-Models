@@ -19,12 +19,10 @@ S2: Sample Taking	tooltip	The specific Sample Taking event to which the sample s
 E31: Report or Document	tooltip	Primarily related to reports and publications, however there is a whole range of documents that can be created to describe or reference the sample site.	document-fs24|
 //links E31: Report or Document --> crm:E31
 
-//subgraph Image Annotations
 EX_Digital_Image_Region	tooltip	A defined digital region on an image corresponding to the physical sample site on the painting.	place2-fs24|
 //links EX_Digital_Image_Region --> rs:EX_Digital_Image_Region
 EX_Digital_Image: Annotation Image	tooltip	A digital image to which annotations have been applied to define the position of the sample site. The image region (EX_Digital_Image_Region) is derived from this annotation.	digital2-fs24|
 //links EX_Digital_Image: Annotation Image --> annotation_image
-//end sg2-10-10
 
 EX_Digital_Image: Sample Site reference image	tooltip	Reference to an image that indicates the sample site (e.g. a scan of an annotated photograph).	digital2-fs24|
 //links EX_Digital_Image: Sample Site reference image --> rs:EX_Digital_Image

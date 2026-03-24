@@ -1,6 +1,6 @@
 # Model Consistency Report
 
-_Generated: 2026-03-24 11:02 UTC_
+_Generated: 2026-03-24 11:06 UTC_
 
 **Individual model files analysed:** 16  
 **Workflow/overview files analysed:** 1  
@@ -202,7 +202,7 @@ Each model's linked entities are listed with their declared target models and co
 </details>
 
 <details>
-<summary><strong>sample_site/sample_site_v1.6.tsv</strong> -- 8 confirmed, 2 undeclared</summary>
+<summary><strong>sample_site/sample_site_v1.6.tsv</strong> -- 8 confirmed, 1 missing target, 2 undeclared</summary>
 
 | Linked entity | Class code | Declared target(s) | Status |
 | --- | --- | --- | --- |
@@ -210,6 +210,7 @@ Each model's linked entities are listed with their declared target models and co
 | `E22/S13: Heritage Sample` | `E22/S13` | `sample` → `E22: Physical Sample` | ✅ Consistent |
 | `S2: Sample Taking` | `S2` | `sample_taking` → `S2: Sample Taking` | ✅ Consistent |
 | `E31: Report or Document` | `E31` | `crm:E31` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
+| `EX_Digital_Image: Annotation Image` | `EX_Digital_Image` | `annotation_image` | ❓ Missing target -- folder not found in repo |
 | `EX_Digital_Image: Sample Site reference image` | `EX_Digital_Image` | `rs:EX_Digital_Image` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
 | `EX_Digital_Image: Other Site Image` | `EX_Digital_Image` | `rs:EX_Digital_Image` (ontology) | 📖 Ontology reference -- follows standard CRM structure |
 | `E22: Heritage Object Part` | `E22` | `heritage_object_part` → `E22/S20: Heritage Object Part` | ✅ Consistent |

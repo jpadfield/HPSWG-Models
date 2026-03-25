@@ -18,13 +18,13 @@ See [`ONTOLOGIES.md`](../ONTOLOGIES.md) for full version details, source links, 
 ## Model versions
 
 <details>
-<summary><strong>Sampling activity</strong>: latest version <a href="https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/RICHeS-UKRI/HPSWG-Models/refs/heads/main/models/sampling_activity/sampling_activity_v1.2.tsv">v1.2</a></summary>
+<summary><strong>Sampling activity</strong>: latest version <a href="https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sampling_activity/sampling_activity_v1.2.tsv">v1.2</a></summary>
 
 | | Version | Created | Last modified | Open in Modeller |
 | :---: | :---: | :---: | :---: | --- |
-| :heavy_check_mark: | v1.2 | 2026-03-23 | 2026-03-24 | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/RICHeS-UKRI/HPSWG-Models/refs/heads/main/models/sampling_activity/sampling_activity_v1.2.tsv) |
-|  | v1.1 | 2026-03-07 | 2026-03-23 | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/RICHeS-UKRI/HPSWG-Models/refs/heads/main/models/sampling_activity/sampling_activity_v1.1.tsv) |
-|  | v1.0 | 2026-03-07 | 2026-03-23 | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/RICHeS-UKRI/HPSWG-Models/refs/heads/main/models/sampling_activity/sampling_activity_v1.0.tsv) |
+| :heavy_check_mark: | v1.2 | 2026-03-23 | 2026-03-24 | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sampling_activity/sampling_activity_v1.2.tsv) |
+|  | v1.1 | 2026-03-07 | 2026-03-23 | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sampling_activity/sampling_activity_v1.1.tsv) |
+|  | v1.0 | 2026-03-07 | 2026-03-23 | [Open](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sampling_activity/sampling_activity_v1.0.tsv) |
 
 </details>
 
@@ -32,7 +32,7 @@ See [`ONTOLOGIES.md`](../ONTOLOGIES.md) for full version details, source links, 
 
 This table lists the fields defined for data entry or display, derived from `//field` and `//field-via` directives in the model. See the [forms folder](../../forms/field-tables.md) for the aggregated cross-model view.
 
-[`models/sampling_activity`](../models/sampling_activity/) | [v1.2](https://raw.githubusercontent.com/RICHeS-UKRI/HPSWG-Models/refs/heads/main/models/sampling_activity/sampling_activity_v1.2.tsv) | [Open in Modeller](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/RICHeS-UKRI/HPSWG-Models/refs/heads/main/models/sampling_activity/sampling_activity_v1.2.tsv)
+[`models/sampling_activity`](../models/sampling_activity/) | [v1.2](https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sampling_activity/sampling_activity_v1.2.tsv) | [Open in Modeller](https://research.nationalgallery.org.uk/lab/modelling/?url=https://raw.githubusercontent.com/jpadfield/HPSWG-Models/refs/heads/main/models/sampling_activity/sampling_activity_v1.2.tsv)
 
 This model defines a broader Sampling Activity (E7) at the Object level, that groups shared metadata (who, when, where, why, and documentation) for one or more individual sample extraction activities. Each extraction is represented as a nested S2: Sample Taking event linked from the Sampling Activity. This allows shared context to be captured once, while extraction-specific links (sample site, removed sample, and observation) are recorded per individual Sample Taking event.
 
